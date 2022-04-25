@@ -2,6 +2,12 @@ export abstract class Token {
   get(): Token {
     return this;
   }
+  getStackPriority(): number {
+    return 0;
+  }
+  getInputPriority(): number {
+    return 0;
+  }
 }
 
 /**
@@ -68,6 +74,7 @@ export class NumberToken extends Token {
     return `Number: ${this.literal}`;
   }
 }
+
 export class SelectToken extends Token {
   static readonly TOKEN = new SelectToken();
 
@@ -132,6 +139,22 @@ export class EqualToken extends Token {
 
   toString(): string {
     return `=`;
+  }
+}
+
+export class LParenToken extends Token {
+  static readonly TOKEN = new LParenToken();
+
+  toString(): string {
+    return `(`;
+  }
+}
+
+export class RParenToken extends Token {
+  static readonly TOKEN = new RParenToken();
+
+  toString(): string {
+    return `)`;
   }
 }
 

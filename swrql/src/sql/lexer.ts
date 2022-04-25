@@ -6,6 +6,8 @@ import {
   EqualToken,
   Token,
   StringToken,
+  LParenToken,
+  RParenToken,
 } from './token';
 
 export class SQLLexer {
@@ -45,6 +47,12 @@ export class SQLLexer {
       case '*':
         this.nextChar();
         return AsteriskToken.TOKEN;
+      case '(':
+        this.nextChar();
+        return LParenToken.TOKEN;
+      case ')':
+        this.nextChar();
+        return RParenToken.TOKEN;
       case "'":
         this.nextChar();
         return new StringToken(this.readString());
