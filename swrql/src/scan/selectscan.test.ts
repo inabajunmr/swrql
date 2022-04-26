@@ -23,7 +23,6 @@ test(`SELECT * FROM abc WHERE a=1 OR b=2 AND c=3;`, () => {
   expect(actual.next()).toBe(true);
   assertRecord(actual.getRecord(), '2', '2', '3');
   expect(actual.next()).toBe(false);
-
 });
 
 function assertRecord(record: Record, a: string, b: string, c: string) {

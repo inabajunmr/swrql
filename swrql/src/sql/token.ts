@@ -1,7 +1,4 @@
 export abstract class Token {
-  get(): Token {
-    return this;
-  }
   getStackPriority(): number {
     return 0;
   }

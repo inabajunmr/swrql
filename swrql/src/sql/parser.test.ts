@@ -22,9 +22,9 @@ test('SELECT * FROM abc WHERE a=1;', () => {
   expect(actual.fields).toContain('*');
   expect(actual.table).toContain('abc');
   expect(actual.where.tokens).toHaveLength(3);
-  expect(actual.where.tokens[0].get()).toStrictEqual(new IdentifierToken('a'));
-  expect(actual.where.tokens[1].get()).toStrictEqual(new NumberToken('1'));
-  expect(actual.where.tokens[2].get()).toStrictEqual(EqualToken.TOKEN);
+  expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
+  expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));
+  expect(actual.where.tokens[2]).toStrictEqual(EqualToken.TOKEN);
 });
 
 test(`SELECT a,b,c FROM abc WHERE a=1 AND b='abc';`, () => {
@@ -38,13 +38,13 @@ test(`SELECT a,b,c FROM abc WHERE a=1 AND b='abc';`, () => {
 
   // a 1 = b 'abc' = AND
   expect(actual.where.tokens).toHaveLength(7);
-  expect(actual.where.tokens[0].get()).toStrictEqual(new IdentifierToken('a'));
-  expect(actual.where.tokens[1].get()).toStrictEqual(new NumberToken('1'));
-  expect(actual.where.tokens[2].get()).toStrictEqual(EqualToken.TOKEN);
-  expect(actual.where.tokens[3].get()).toStrictEqual(new IdentifierToken('b'));
-  expect(actual.where.tokens[4].get()).toStrictEqual(new StringToken('abc'));
-  expect(actual.where.tokens[5].get()).toStrictEqual(EqualToken.TOKEN);
-  expect(actual.where.tokens[6].get()).toStrictEqual(AndToken.TOKEN);
+  expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
+  expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));
+  expect(actual.where.tokens[2]).toStrictEqual(EqualToken.TOKEN);
+  expect(actual.where.tokens[3]).toStrictEqual(new IdentifierToken('b'));
+  expect(actual.where.tokens[4]).toStrictEqual(new StringToken('abc'));
+  expect(actual.where.tokens[5]).toStrictEqual(EqualToken.TOKEN);
+  expect(actual.where.tokens[6]).toStrictEqual(AndToken.TOKEN);
 });
 
 test(`SELECT a,b,c FROM abc WHERE a=1 AND (b='abc' OR c=2);`, () => {
@@ -60,15 +60,15 @@ test(`SELECT a,b,c FROM abc WHERE a=1 AND (b='abc' OR c=2);`, () => {
 
   // a 1 = b abc = c 2 = OR AND
   expect(actual.where.tokens).toHaveLength(11);
-  expect(actual.where.tokens[0].get()).toStrictEqual(new IdentifierToken('a'));
-  expect(actual.where.tokens[1].get()).toStrictEqual(new NumberToken('1'));
-  expect(actual.where.tokens[2].get()).toStrictEqual(EqualToken.TOKEN);
-  expect(actual.where.tokens[3].get()).toStrictEqual(new IdentifierToken('b'));
-  expect(actual.where.tokens[4].get()).toStrictEqual(new StringToken('abc'));
-  expect(actual.where.tokens[5].get()).toStrictEqual(EqualToken.TOKEN);
-  expect(actual.where.tokens[6].get()).toStrictEqual(new IdentifierToken('c'));
-  expect(actual.where.tokens[7].get()).toStrictEqual(new NumberToken('2'));
-  expect(actual.where.tokens[8].get()).toStrictEqual(EqualToken.TOKEN);
-  expect(actual.where.tokens[9].get()).toStrictEqual(OrToken.TOKEN);
-  expect(actual.where.tokens[10].get()).toStrictEqual(AndToken.TOKEN);
+  expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
+  expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));
+  expect(actual.where.tokens[2]).toStrictEqual(EqualToken.TOKEN);
+  expect(actual.where.tokens[3]).toStrictEqual(new IdentifierToken('b'));
+  expect(actual.where.tokens[4]).toStrictEqual(new StringToken('abc'));
+  expect(actual.where.tokens[5]).toStrictEqual(EqualToken.TOKEN);
+  expect(actual.where.tokens[6]).toStrictEqual(new IdentifierToken('c'));
+  expect(actual.where.tokens[7]).toStrictEqual(new NumberToken('2'));
+  expect(actual.where.tokens[8]).toStrictEqual(EqualToken.TOKEN);
+  expect(actual.where.tokens[9]).toStrictEqual(OrToken.TOKEN);
+  expect(actual.where.tokens[10]).toStrictEqual(AndToken.TOKEN);
 });

@@ -20,7 +20,7 @@ export class Predicate {
     const tempTokens = [...this.tokens];
     const stack = [];
     while (tempTokens.length > 0) {
-      const current = tempTokens.shift()?.get();
+      const current = tempTokens.shift();
 
       if (current === EqualToken.TOKEN) {
         const l = stack.pop();

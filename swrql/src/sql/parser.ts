@@ -23,7 +23,7 @@ export class SQLParser {
     if (!(this.tokens.shift() instanceof SelectToken)) {
       // TODO throw exception
     }
-    let current = this.tokens.shift()?.get();
+    let current = this.tokens.shift();
     const fields: string[] = [];
     while (!(current instanceof FromToken)) {
       if (current instanceof IdentifierToken) {
@@ -33,14 +33,14 @@ export class SQLParser {
         this.tokens.shift();
         break;
       }
-      current = this.tokens.shift()?.get();
+      current = this.tokens.shift();
 
       // TODO throw exception when abnormal comma
       // TODO throw exception when no From
     }
 
     const table = (this.tokens.shift() as IdentifierToken).literal;
-    if (this.tokens[0].get() === WhereToken.TOKEN) {
+    if (this.tokens[0] === WhereToken.TOKEN) {
       // remove where
       this.tokens.shift();
       return new SelectData(fields, table, this.parsePredicate());
@@ -54,16 +54,16 @@ export class SQLParser {
     const result: Token[] = [];
     const stack: Token[] = [EOFToken.TOKEN];
     while (this.tokens.length > 0) {
-      const current = this.tokens[0].get();
+      const current = this.tokens[0];
       if (
         getStackPriority(stack[stack.length - 1]) > getInputPriority(current)
       ) {
-        const s = stack.pop()?.get();
+        const s = stack.pop();
         if (s !== RParenToken.TOKEN && s !== LParenToken.TOKEN) {
           result.push(s as Token);
         }
       } else {
-        stack.push(this.tokens.shift()?.get() as Token);
+        stack.push(this.tokens.shift() as Token);
       }
     }
 
