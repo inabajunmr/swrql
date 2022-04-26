@@ -1,6 +1,9 @@
 import { Predicate } from '../predicate/predicate';
 import { Record, Scan } from './scan';
 
+/**
+ * Extract records match agaist predicate
+ */
 export class SelectScan implements Scan {
   private readonly scan: Scan;
   private readonly predicate: Predicate;

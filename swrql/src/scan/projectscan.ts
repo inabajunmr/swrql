@@ -1,5 +1,8 @@
 import { Record, Scan } from './scan';
 
+/**
+ * filter only specified fields.
+ */
 export class ProjectScan implements Scan {
   private readonly scan: Scan;
   private readonly fields: string[];

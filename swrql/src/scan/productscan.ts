@@ -1,5 +1,8 @@
 import { Record, Scan } from './scan';
 
+/**
+ * project multiple scan.
+ */
 export class ProductScan implements Scan {
   private readonly scan1;
   private readonly scan2;

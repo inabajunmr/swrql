@@ -21,7 +21,7 @@ export class IdentifierToken extends Token {
     return `Ident: ${this.literal}`;
   }
 
-  get(): Token {
+  asKeyword(): Token {
     switch (this.literal.toUpperCase()) {
       case 'SELECT':
         return SelectToken.TOKEN;
@@ -72,6 +72,9 @@ export class NumberToken extends Token {
   }
 }
 
+/**
+ * SELECT
+ */
 export class SelectToken extends Token {
   static readonly TOKEN = new SelectToken();
 
@@ -80,6 +83,9 @@ export class SelectToken extends Token {
   }
 }
 
+/**
+ * FROM
+ */
 export class FromToken extends Token {
   static readonly TOKEN = new FromToken();
 
@@ -88,6 +94,9 @@ export class FromToken extends Token {
   }
 }
 
+/**
+ * WHERE
+ */
 export class WhereToken extends Token {
   static readonly TOKEN = new WhereToken();
 
@@ -96,6 +105,9 @@ export class WhereToken extends Token {
   }
 }
 
+/**
+ * AND
+ */
 export class AndToken extends Token {
   static readonly TOKEN = new AndToken();
 
@@ -104,6 +116,9 @@ export class AndToken extends Token {
   }
 }
 
+/**
+ * OR
+ */
 export class OrToken extends Token {
   static readonly TOKEN = new OrToken();
 
@@ -123,6 +138,9 @@ export class CommaToken extends Token {
   }
 }
 
+/**
+ * *
+ */
 export class AsteriskToken extends Token {
   static readonly TOKEN = new AsteriskToken();
 
@@ -139,6 +157,9 @@ export class EqualToken extends Token {
   }
 }
 
+/**
+ * (
+ */
 export class LParenToken extends Token {
   static readonly TOKEN = new LParenToken();
 
@@ -147,6 +168,9 @@ export class LParenToken extends Token {
   }
 }
 
+/**
+ * )
+ */
 export class RParenToken extends Token {
   static readonly TOKEN = new RParenToken();
 

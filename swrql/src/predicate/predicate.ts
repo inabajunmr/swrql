@@ -9,6 +9,9 @@ import {
   Token,
 } from '../sql/token';
 
+/**
+ * this predicate is implemented as PRN
+ */
 export class Predicate {
   // RPN order tokens
   readonly tokens: Token[];
