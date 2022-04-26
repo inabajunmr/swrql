@@ -1,6 +1,7 @@
 export interface Scan {
   next(): boolean;
   getRecord(): Record;
+  rewind(): void;
 }
 
 export class Record {
@@ -12,5 +13,13 @@ export class Record {
 
   get(field: string): string {
     return this.record[field];
+  }
+
+  merge(merge: Record): Record {
+    return new Record(Object.assign({}, merge.unwrap(), this.record));
+  }
+
+  private unwrap() {
+    return this.record;
   }
 }

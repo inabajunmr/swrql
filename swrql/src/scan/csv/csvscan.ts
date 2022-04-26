@@ -25,6 +25,10 @@ export class CSVScan implements Scan {
     return true;
   }
 
+  rewind() {
+    this.index = 0;
+  }
+
   getRecord(): Record {
     return new Record(this.records[this.index]);
   }

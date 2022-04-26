@@ -24,4 +24,8 @@ export class SelectScan implements Scan {
   getRecord(): Record {
     return this.scan.getRecord();
   }
+
+  rewind(): void {
+    this.scan.rewind();
+  }
 }
