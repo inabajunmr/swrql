@@ -15,8 +15,18 @@ export class Record {
     return this.record[field];
   }
 
+  size(): number {
+    return Object.keys(this.record).length;
+  }
+
   merge(merge: Record): Record {
     return new Record(Object.assign({}, merge.unwrap(), this.record));
+  }
+
+  project(fields: string[]) {
+    const result: any = {};
+    fields.forEach((f) => (result[f] = this.get(f)));
+    return new Record(result);
   }
 
   private unwrap() {
