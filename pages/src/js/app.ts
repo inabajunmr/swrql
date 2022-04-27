@@ -1,6 +1,8 @@
+import { stringify } from 'csv-stringify/sync';
 import * as swrql from 'swrql';
 
 export function execute() : void {
+    document.getElementById("error")!.textContent = '';
 
     const tableName = (document.getElementById("tablename") as any).value;
     const csv = (document.getElementById("csv") as any).value;
@@ -8,18 +10,18 @@ export function execute() : void {
 
     try {
         const scan = new swrql.CSVScan(tableName, csv);
-        const records = new swrql.SQLExecution([scan], sql).execute();
-        let result = 'a,b,c\n';
-        records.forEach(r => {
-            const a = r.get('a');
-            const b = r.get('b');
-            const c = r.get('c');
-            result += `${a},${b},${c}` + '\n';
-        });
-    
-        document.getElementById("result")!.textContent = result;    
-    } catch(e) {
-        console.log(`err ${e}`);
+        const result = new swrql.SQLExecution([scan], sql).execute();
+        if(result.records.length === 0) {
+            document.getElementById("result")!.textContent = result.fields.join(',');
+        }else {
+            document.getElementById("result")!.textContent = stringify(result.records.map(r => r.unwrap()), { header: true });
+        }        
+    } catch(e:unknown) {
+        if(e instanceof Error) {
+            document.getElementById("error")!.textContent = e.message;
+        } else {
+            document.getElementById("error")!.textContent = 'Unexpected error.';
+        }
     }
 }
 (document.getElementById("csv")as HTMLTextAreaElement).value = `a,b,c
@@ -42,3 +44,5 @@ document.getElementById("sql")!.addEventListener("input", () => {
 document.getElementById("tablename")!.addEventListener("input", () => {
     execute();
 })
+
+execute();
