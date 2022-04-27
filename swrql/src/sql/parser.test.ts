@@ -12,7 +12,7 @@ test('SELECT * FROM abc;', () => {
   const parser = new SQLParser('SELECT * FROM abc;');
   const actual = parser.parse();
   expect(actual.fields).toContain('*');
-  expect(actual.table).toContain('abc');
+  expect(actual.tables[0]).toContain('abc');
   expect(actual.where.tokens).toHaveLength(0);
 });
 
@@ -20,7 +20,7 @@ test('SELECT * FROM abc WHERE a=1;', () => {
   const parser = new SQLParser('SELECT * FROM abc WHERE a=1;');
   const actual = parser.parse();
   expect(actual.fields).toContain('*');
-  expect(actual.table).toContain('abc');
+  expect(actual.tables[0]).toContain('abc');
   expect(actual.where.tokens).toHaveLength(3);
   expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
   expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));
@@ -34,7 +34,7 @@ test(`SELECT a,b,c FROM abc WHERE a=1 AND b='abc';`, () => {
   expect(actual.fields).toContain('a');
   expect(actual.fields).toContain('b');
   expect(actual.fields).toContain('c');
-  expect(actual.table).toContain('abc');
+  expect(actual.tables[0]).toContain('abc');
 
   // a 1 = b 'abc' = AND
   expect(actual.where.tokens).toHaveLength(7);
@@ -56,7 +56,7 @@ test(`SELECT a,b,c FROM abc WHERE a=1 AND (b='abc' OR c=2);`, () => {
   expect(actual.fields).toContain('a');
   expect(actual.fields).toContain('b');
   expect(actual.fields).toContain('c');
-  expect(actual.table).toContain('abc');
+  expect(actual.tables[0]).toContain('abc');
 
   // a 1 = b abc = c 2 = OR AND
   expect(actual.where.tokens).toHaveLength(11);

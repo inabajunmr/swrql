@@ -1,6 +1,6 @@
 import { CSVScan } from './csv/csvscan';
 import { ProjectScan } from './projectscan';
-test('procjet', () => {
+test('procject', () => {
   const table = new CSVScan(
     'table',
     `t1a,t1b,t1c
@@ -9,6 +9,7 @@ test('procjet', () => {
         x,y,z`
   );
   const scan = new ProjectScan(table, ['t1a', 't1b']);
+  expect(scan.next()).toBe(true);
   expect(scan.getRecord().size()).toBe(2);
   expect(scan.getRecord().get('t1a')).toBe('1');
   expect(scan.getRecord().get('t1b')).toBe('2');

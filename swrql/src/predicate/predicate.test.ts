@@ -39,3 +39,9 @@ test(`a=1 OR b=2 AND c=3`, () => {
   expect(sut.test(new Record({ a: '2', b: '2', c: '3' }))).toBe(true);
   expect(sut.test(new Record({ a: '2', b: '2', c: '4' }))).toBe(false);
 });
+
+test(`a=1 OR b='bar';`, () => {
+  const sut = new SQLParser(`SELECT * FROM abc WHERE a=1 OR b='bar';`).parse()
+    .where;
+  expect(sut.test(new Record({ a: 'foo', b: 'bar', c: 'baz' }))).toBe(true);
+});

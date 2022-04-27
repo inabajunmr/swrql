@@ -14,7 +14,7 @@ export class CSVScan implements Scan {
       rtrim: true,
       ltrim: true,
     });
-    this.index = 0;
+    this.index = -1;
   }
 
   next(): boolean {
@@ -26,7 +26,7 @@ export class CSVScan implements Scan {
   }
 
   rewind() {
-    this.index = 0;
+    this.index = -1;
   }
 
   getRecord(): Record {

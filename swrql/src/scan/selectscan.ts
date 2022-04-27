@@ -13,15 +13,12 @@ export class SelectScan implements Scan {
   }
 
   next(): boolean {
-    if (!this.scan.next()) {
-      return false;
-    }
-    while (!this.predicate.test(this.getRecord())) {
-      if (!this.scan.next()) {
-        return false;
+    while (this.scan.next()) {
+      if (this.predicate.test(this.getRecord())) {
+        return true;
       }
     }
-    return true;
+    return false;
   }
 
   getRecord(): Record {

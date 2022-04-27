@@ -20,11 +20,13 @@ export class Predicate {
   }
 
   test(record: Record): boolean {
+    if (this.tokens.length === 0) {
+      return true;
+    }
     const tempTokens = [...this.tokens];
     const stack: any[] = [];
     while (tempTokens.length > 0) {
       const current = tempTokens.shift();
-
       if (current === EqualToken.TOKEN) {
         const l = stack.pop();
         const r = stack.pop();

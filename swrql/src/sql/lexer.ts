@@ -57,7 +57,7 @@ export class SQLLexer {
         this.nextChar();
         return new StringToken(this.readString());
       default: {
-        return new IdentifierToken(this.readIdentifier()).get();
+        return new IdentifierToken(this.readIdentifier()).asKeyword();
       }
     }
   }

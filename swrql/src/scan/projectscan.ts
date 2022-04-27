@@ -16,6 +16,9 @@ export class ProjectScan implements Scan {
   }
 
   getRecord(): Record {
+    if (this.fields[0] === '*') {
+      return this.scan.getRecord();
+    }
     return this.scan.getRecord().project(this.fields);
   }
 

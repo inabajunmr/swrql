@@ -8,6 +8,7 @@ test('CSV Scan', () => {
                           1,   2,      3, 123, 456, 789
                           foo,bar,foobar,hoge,fuga,piyo`
   );
+  expect(sut.next()).toBe(true);
   assertRecord(sut.getRecord(), ['1', '2', '3', '123', '456', '789']);
   expect(sut.next()).toBe(true);
   assertRecord(sut.getRecord(), [

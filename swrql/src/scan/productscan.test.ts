@@ -18,7 +18,7 @@ test('product 2 tables', () => {
   );
 
   const sut = new ProductScan(table1, table2);
-
+  expect(sut.next()).toBe(true);
   assertRecord(sut.getRecord(), '1', '2', '3', 'foo', 'bar');
   expect(sut.next()).toBe(true);
   assertRecord(sut.getRecord(), '1', '2', '3', 'hoge', 'fuga');

@@ -43,9 +43,9 @@ export class SQLParser {
     if (this.tokens[0] === WhereToken.TOKEN) {
       // remove where
       this.tokens.shift();
-      return new SelectData(fields, table, this.parsePredicate());
+      return new SelectData(fields, [table], this.parsePredicate());
     } else {
-      return new SelectData(fields, table, new Predicate([]));
+      return new SelectData(fields, [table], new Predicate([]));
     }
   }
 
@@ -73,12 +73,12 @@ export class SQLParser {
 
 export class SelectData {
   readonly fields: string[];
-  readonly table: string;
+  readonly tables: string[];
   readonly where: Predicate;
 
-  constructor(fields: string[], table: string, where: Predicate) {
+  constructor(fields: string[], tables: string[], where: Predicate) {
     this.fields = fields;
-    this.table = table;
+    this.tables = tables;
     this.where = where;
   }
 }
