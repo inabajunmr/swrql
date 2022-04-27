@@ -1,0 +1,35 @@
+{
+  "name": "swrql-page",
+  "version": "0.0.0",
+  "description": "browser ui for swrql",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inabajunmr/swrql.git"
+  },
+  "author": "inabajunmr",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/inabajunmr/swrql/issues"
+  },
+  "homepage": "https://github.com/inabajunmr/swrql#readme",
+  "private": true,
+  "devDependencies": {
+    "buffer": "^6.0.3",
+    "ts-loader": "^8.0.14",
+    "typescript": "^4.1.3",
+    "webpack": "^5.12.1",
+    "webpack-cli": "^4.9.2"
+  },
+  "dependencies": {
+    "csv-parse": "^5.0.4",
+    "process": "^0.11.10",
+    "stream": "^0.0.2",
+    "stream-browserify": "^3.0.0",
+    "swrql": "^0.0.2",
+    "util": "^0.12.4"
+  }
+}
