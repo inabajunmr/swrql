@@ -95,12 +95,13 @@ export class SQLLexer {
 
   private readString(): string {
     let result = '';
-    while (this.now() !== "'" && !this.isEOF()) {
+    while (this.now() !== "'") {
+      if (this.isEOF()) {
+        throw Error('Unclosed double-quote.');
+      }
       result += this.now();
       this.nextChar();
     }
-
-    // TODO throw exception when unclosed string
 
     this.nextChar();
     return result;

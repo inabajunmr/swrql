@@ -1,7 +1,6 @@
 import { Scan } from '../scan';
 import { Record } from '../record';
 import { parse } from 'csv-parse/sync';
-import { Parser } from 'csv-parse/.';
 
 export class CSVScan implements Scan {
   readonly tableName: string;

@@ -72,3 +72,19 @@ test(`SELECT a,b,c FROM abc WHERE a=1 AND (b='abc' OR c=2);`, () => {
   expect(actual.where.tokens[9]).toStrictEqual(OrToken.TOKEN);
   expect(actual.where.tokens[10]).toStrictEqual(AndToken.TOKEN);
 });
+
+test(`No SELECT clause`, () => {
+  const parser = new SQLParser(
+    `a,b,c FROM abc WHERE a=1 AND (b='abc' OR c=2);`
+  );
+  expect(() => parser.parse()).toThrowError('Query needs SELECT clause.');
+});
+
+test(`No FROM clause`, () => {
+  const parser = new SQLParser(
+    `SELECT a,b,c abc WHERE a=1 AND (b='abc' OR c=2);`
+  );
+  expect(() => parser.parse()).toThrowError(
+    'Field list at SELECT clause is something wrong.'
+  );
+});

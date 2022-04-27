@@ -3,6 +3,7 @@ import { SQLLexer } from './lexer';
 import { getInputPriority, getStackPriority } from './shunting-yard';
 import {
   AsteriskToken,
+  CommaToken,
   EOFToken,
   FromToken,
   IdentifierToken,
@@ -20,23 +21,29 @@ export class SQLParser {
   }
 
   parse(): SelectData {
+    // SELECT
     if (!(this.tokens.shift() instanceof SelectToken)) {
-      // TODO throw exception
+      throw new Error('Query needs SELECT clause.');
     }
+
+    // FIELDS
     let current = this.tokens.shift();
     const fields: string[] = [];
     while (!(current instanceof FromToken)) {
+      if (current instanceof EOFToken) {
+        throw new Error('Query needs FROM clause.');
+      }
+
       if (current instanceof IdentifierToken) {
         fields.push(current.literal);
       } else if (current instanceof AsteriskToken) {
         fields.push('*');
         this.tokens.shift();
         break;
+      } else if (!(current instanceof CommaToken)) {
+        throw new Error('Field list at SELECT clause is something wrong.');
       }
       current = this.tokens.shift();
-
-      // TODO throw exception when abnormal comma
-      // TODO throw exception when no From
     }
 
     const table = (this.tokens.shift() as IdentifierToken).literal;

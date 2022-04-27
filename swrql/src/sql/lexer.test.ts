@@ -63,3 +63,8 @@ test("SELECT AAA,B123,C_C FROM abc WHERE a=1 AND b='abc';", () => {
   expect(actual[15]).toStrictEqual(new StringToken('abc'));
   expect(actual[16]).toStrictEqual(EOFToken.TOKEN);
 });
+
+test("SELECT * FROM abc WHERE a='a;", () => {
+  const lexer = new SQLLexer("SELECT * FROM abc WHERE a='a;");
+  expect(() => lexer.tokens()).toThrowError('Unclosed double-quote.');
+});

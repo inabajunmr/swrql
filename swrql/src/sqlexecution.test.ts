@@ -58,6 +58,19 @@ foo,bar,baz`
   expect(actual.records.length).toBe(2);
 });
 
+test(`FROM clause has unknown table name`, () => {
+  const table1 = new CSVScan(
+    'abc',
+    `a,b,c
+1,2,3`
+  );
+  const sqlExecution = new SQLExecution(
+    [table1],
+    `select * from xyz where a=1 OR b='bar';`
+  );
+  expect(() => sqlExecution.execute()).toThrowError('xyz is not found.');
+});
+
 function assertRecord(record: Record, expected: any) {
   Object.keys(expected).forEach((k) => {
     expect(record.get(k)).toBe(expected[k]);

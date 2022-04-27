@@ -21,7 +21,9 @@ export class SQLExecution {
       return select.tables.includes(s.tableName);
     });
 
-    // TODO no table matched
+    if (targetTables.length === 0) {
+      throw new Error(`${select.tables} is not found.`);
+    }
 
     // Product
     let projected = targetTables.shift() as Scan;
