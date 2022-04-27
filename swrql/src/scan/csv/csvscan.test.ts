@@ -1,4 +1,4 @@
-import { Record } from '../scan';
+import { Record } from '../record';
 import { CSVScan } from './csvscan';
 
 test('CSV Scan', () => {
@@ -8,6 +8,13 @@ test('CSV Scan', () => {
                           1,   2,      3, 123, 456, 789
                           foo,bar,foobar,hoge,fuga,piyo`
   );
+  expect(sut.fields()).toContain('a');
+  expect(sut.fields()).toContain('b');
+  expect(sut.fields()).toContain('c');
+  expect(sut.fields()).toContain('abc');
+  expect(sut.fields()).toContain('bcd');
+  expect(sut.fields()).toContain('cde');
+  expect(sut.fields().length).toBe(6);
   expect(sut.next()).toBe(true);
   assertRecord(sut.getRecord(), ['1', '2', '3', '123', '456', '789']);
   expect(sut.next()).toBe(true);

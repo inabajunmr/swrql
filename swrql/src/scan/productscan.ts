@@ -1,4 +1,5 @@
-import { Record, Scan } from './scan';
+import { Scan } from './scan';
+import { Record } from './record';
 
 /**
  * project multiple scan.
@@ -12,6 +13,10 @@ export class ProductScan implements Scan {
     this.scan1 = scan1;
     this.scan2 = scan2;
     this.noRecord = !this.scan1.next();
+  }
+
+  fields(): string[] {
+    return [...this.scan1.fields(), ...this.scan2.fields()];
   }
 
   next(): boolean {

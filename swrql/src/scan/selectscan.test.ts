@@ -1,7 +1,7 @@
 import { SQLParser } from '../sql/parser';
 import { SelectScan } from './selectscan';
 import { CSVScan } from './csv/csvscan';
-import { Record } from './scan';
+import { Record } from './record';
 
 test(`select * from abc where a=1 OR b='bar';`, () => {
   const selectData = new SQLParser(

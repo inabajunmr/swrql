@@ -1,6 +1,6 @@
 import { CSVScan } from './csv/csvscan';
 import { ProductScan } from './productscan';
-import { Record } from './scan';
+import { Record } from './record';
 
 test('product 2 tables', () => {
   const table1 = new CSVScan(

@@ -1,4 +1,4 @@
-import { Record } from '../scan/scan';
+import { Record } from '../scan/record';
 import {
   AndToken,
   EqualToken,

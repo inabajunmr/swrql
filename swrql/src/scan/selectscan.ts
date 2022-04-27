@@ -1,5 +1,6 @@
 import { Predicate } from '../predicate/predicate';
-import { Record, Scan } from './scan';
+import { Scan } from './scan';
+import { Record } from './record';
 
 /**
  * Extract records match agaist predicate
@@ -10,6 +11,9 @@ export class SelectScan implements Scan {
   constructor(scan: Scan, predicate: Predicate) {
     this.scan = scan;
     this.predicate = predicate;
+  }
+  fields(): string[] {
+    return this.scan.fields();
   }
 
   next(): boolean {

@@ -1,5 +1,5 @@
 import { CSVScan } from './scan/csv/csvscan';
-import { Record } from './scan/scan';
+import { Record } from './scan/record';
 import { SQLExecution } from './sqlexecution';
 
 test('select * from abc;', () => {
@@ -13,10 +13,14 @@ foo,bar,baz`
   const sqlExecution = new SQLExecution([table1], 'select * from abc;');
   const actual = sqlExecution.execute();
 
-  assertRecord(actual[0], { a: '1', b: '2', c: '3' });
-  assertRecord(actual[1], { a: 'x', b: 'y', c: 'z' });
-  assertRecord(actual[2], { a: 'foo', b: 'bar', c: 'baz' });
-  expect(actual.length).toBe(3);
+  assertRecord(actual.records[0], { a: '1', b: '2', c: '3' });
+  assertRecord(actual.records[1], { a: 'x', b: 'y', c: 'z' });
+  assertRecord(actual.records[2], { a: 'foo', b: 'bar', c: 'baz' });
+  expect(actual.records.length).toBe(3);
+  expect(actual.fields.length).toBe(3);
+  expect(actual.fields).toContain('a');
+  expect(actual.fields).toContain('b');
+  expect(actual.fields).toContain('c');
 });
 
 test('select a,b from abc;', () => {
@@ -30,10 +34,10 @@ foo,bar,baz`
   const sqlExecution = new SQLExecution([table1], 'select a,b from abc;');
   const actual = sqlExecution.execute();
 
-  assertRecord(actual[0], { a: '1', b: '2' });
-  assertRecord(actual[1], { a: 'x', b: 'y' });
-  assertRecord(actual[2], { a: 'foo', b: 'bar' });
-  expect(actual.length).toBe(3);
+  assertRecord(actual.records[0], { a: '1', b: '2' });
+  assertRecord(actual.records[1], { a: 'x', b: 'y' });
+  assertRecord(actual.records[2], { a: 'foo', b: 'bar' });
+  expect(actual.records.length).toBe(3);
 });
 
 test(`select * from abc where a=1 OR b='bar';`, () => {
@@ -49,9 +53,9 @@ foo,bar,baz`
     `select * from abc where a=1 OR b='bar';`
   );
   const actual = sqlExecution.execute();
-  assertRecord(actual[0], { a: '1', b: '2', c: '3' });
-  assertRecord(actual[1], { a: 'foo', b: 'bar', c: 'baz' });
-  expect(actual.length).toBe(2);
+  assertRecord(actual.records[0], { a: '1', b: '2', c: '3' });
+  assertRecord(actual.records[1], { a: 'foo', b: 'bar', c: 'baz' });
+  expect(actual.records.length).toBe(2);
 });
 
 function assertRecord(record: Record, expected: any) {

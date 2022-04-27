@@ -1,10 +1,13 @@
-import { Record, Scan } from '../scan';
+import { Scan } from '../scan';
+import { Record } from '../record';
 import { parse } from 'csv-parse/sync';
+import { Parser } from 'csv-parse/.';
 
 export class CSVScan implements Scan {
   readonly tableName: string;
   private index: number;
   private readonly records: any;
+  private readonly headers: string[];
 
   constructor(tableName: string, csv: string) {
     this.tableName = tableName;
@@ -14,7 +17,17 @@ export class CSVScan implements Scan {
       rtrim: true,
       ltrim: true,
     });
+    this.headers = parse(csv, {
+      columns: false,
+      skip_empty_lines: true,
+      rtrim: true,
+      ltrim: true,
+    })[0];
     this.index = -1;
+  }
+
+  fields(): string[] {
+    return this.headers;
   }
 
   next(): boolean {

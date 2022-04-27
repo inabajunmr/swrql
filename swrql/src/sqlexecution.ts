@@ -1,7 +1,8 @@
 import { CSVScan } from './scan/csv/csvscan';
 import { ProductScan } from './scan/productscan';
 import { ProjectScan } from './scan/projectscan';
-import { Record, Scan } from './scan/scan';
+import { Scan } from './scan/scan';
+import { Record } from './scan/record';
 import { SelectScan } from './scan/selectscan';
 import { SQLParser } from './sql/parser';
 
@@ -14,7 +15,7 @@ export class SQLExecution {
     this.sql = sql;
   }
 
-  execute(): Record[] {
+  execute(): SQLExecutionResult {
     const select = new SQLParser(this.sql).parse();
     const targetTables = this.tables.filter((s) => {
       return select.tables.includes(s.tableName);
@@ -40,6 +41,15 @@ export class SQLExecution {
       result.push(projectScan.getRecord());
     }
 
-    return result;
+    return new SQLExecutionResult(result, projectScan.fields());
+  }
+}
+
+export class SQLExecutionResult {
+  readonly records: Record[];
+  readonly fields: string[];
+  constructor(records: Record[], fields: string[]) {
+    this.records = records;
+    this.fields = fields;
   }
 }
