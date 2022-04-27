@@ -23,6 +23,28 @@ foo,bar,baz`
   expect(actual.fields).toContain('c');
 });
 
+test('select * from a,b;', () => {
+  const table1 = new CSVScan(
+    'a',
+    `a
+1
+x`
+  );
+  const table2 = new CSVScan(
+    'b',
+    `b
+2
+y`
+  );
+  const sqlExecution = new SQLExecution([table1, table2], 'select * from a,b;');
+  const actual = sqlExecution.execute();
+
+  assertRecord(actual.records[0], { a: '1', b: 'b' });
+  expect(actual.fields.length).toBe(2);
+  expect(actual.fields).toContain('a');
+  expect(actual.fields).toContain('b');
+});
+
 test('select a,b from abc;', () => {
   const table1 = new CSVScan(
     'abc',

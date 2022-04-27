@@ -46,6 +46,7 @@ export class SQLParser {
       current = this.tokens.shift();
     }
 
+    // TODO multiple tables
     const table = (this.tokens.shift() as IdentifierToken).literal;
     if (this.tokens[0] === WhereToken.TOKEN) {
       // remove where
