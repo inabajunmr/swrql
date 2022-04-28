@@ -7,6 +7,7 @@ test(`select * from abc where a=1 OR b='bar';`, () => {
   const selectData = new SQLParser(
     `select * from abc where a=1 OR b='bar';`
   ).parse();
+  console.log(selectData);
   const csv = new CSVScan(
     'abc',
     `a,b,c

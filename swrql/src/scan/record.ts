@@ -27,7 +27,7 @@ export class Record {
     return new Record(result);
   }
 
-  private unwrap() {
+  unwrap() {
     return this.record;
   }
 }

@@ -27,33 +27,51 @@ export class SQLParser {
     }
 
     // FIELDS
-    let current = this.tokens.shift();
     const fields: string[] = [];
-    while (!(current instanceof FromToken)) {
-      if (current instanceof EOFToken) {
-        throw new Error('Query needs FROM clause.');
-      }
+    {
+      let current = this.tokens.shift();
+      while (!(current instanceof FromToken)) {
+        if (current instanceof EOFToken) {
+          throw new Error('Query needs FROM clause.');
+        }
 
-      if (current instanceof IdentifierToken) {
-        fields.push(current.literal);
-      } else if (current instanceof AsteriskToken) {
-        fields.push('*');
-        this.tokens.shift();
-        break;
-      } else if (!(current instanceof CommaToken)) {
-        throw new Error('Field list at SELECT clause is something wrong.');
+        if (current instanceof IdentifierToken) {
+          fields.push(current.literal);
+        } else if (current instanceof AsteriskToken) {
+          fields.push('*');
+          this.tokens.shift();
+          break;
+        } else if (!(current instanceof CommaToken)) {
+          throw new Error('Field list at SELECT clause is something wrong.');
+        }
+        current = this.tokens.shift();
       }
-      current = this.tokens.shift();
     }
 
-    // TODO multiple tables
-    const table = (this.tokens.shift() as IdentifierToken).literal;
-    if (this.tokens[0] === WhereToken.TOKEN) {
+    const tables = [];
+    let current = this.tokens.shift();
+    {
+      while (
+        !(current instanceof WhereToken) &&
+        !(current instanceof EOFToken)
+      ) {
+        if (current instanceof IdentifierToken) {
+          tables.push((current as IdentifierToken).literal);
+        } else if (!(current instanceof CommaToken)) {
+          console.log(current);
+          throw new Error('Field list at FROM clause is something wrong.');
+        }
+        current = this.tokens.shift();
+      }
+    }
+
+    console.log(current);
+
+    if (current === WhereToken.TOKEN) {
       // remove where
-      this.tokens.shift();
-      return new SelectData(fields, [table], this.parsePredicate());
+      return new SelectData(fields, tables, this.parsePredicate());
     } else {
-      return new SelectData(fields, [table], new Predicate([]));
+      return new SelectData(fields, tables, new Predicate([]));
     }
   }
 

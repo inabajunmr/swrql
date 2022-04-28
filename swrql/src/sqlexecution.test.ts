@@ -38,8 +38,11 @@ y`
   );
   const sqlExecution = new SQLExecution([table1, table2], 'select * from a,b;');
   const actual = sqlExecution.execute();
-
-  assertRecord(actual.records[0], { a: '1', b: 'b' });
+  expect(actual.records.length).toBe(4);
+  assertRecord(actual.records[0], { a: '1', b: '2' });
+  assertRecord(actual.records[1], { a: '1', b: 'y' });
+  assertRecord(actual.records[2], { a: 'x', b: '2' });
+  assertRecord(actual.records[3], { a: 'x', b: 'y' });
   expect(actual.fields.length).toBe(2);
   expect(actual.fields).toContain('a');
   expect(actual.fields).toContain('b');
