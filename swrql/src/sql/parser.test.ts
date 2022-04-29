@@ -127,7 +127,6 @@ test(`SELECT a,b,c FROM abc WHERE a=1 AND (b='abc' OR c=2);`, () => {
   expect(actual.tables[0]).toContain('abc');
 
   // a 1 = b abc = c 2 = OR AND
-  console.log(actual.where.tokens);
   expect(actual.where.tokens).toHaveLength(11);
   expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
   expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));

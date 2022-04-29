@@ -14,6 +14,8 @@ import {
   GreaterThanOrEqualToken,
   DiamondToken,
   OrderByToken,
+  AndToken,
+  NumberToken,
 } from './token';
 
 export class SQLLexer {
@@ -26,7 +28,7 @@ export class SQLLexer {
 
   tokens(): Token[] {
     let t = null;
-    const r: Token[] = [];
+    let r: Token[] = [];
     while (t instanceof EOFToken == false) {
       t = this.nextToken();
       const before = r[r.length - 1];
@@ -39,6 +41,43 @@ export class SQLLexer {
         r[r.length - 1] = OrderByToken.TOKEN;
       } else {
         r.push(t);
+      }
+    }
+
+    // expand 'x between a and b' to '(x >= a AND x <= b)';
+    for (let i = 0; i < r.length; i++) {
+      const c = r[i];
+      if (
+        c instanceof IdentifierToken &&
+        c.literal.toUpperCase() === 'BETWEEN'
+      ) {
+        const x = r[i - 1];
+        const a = r[i + 1];
+        const and = r[i + 2];
+        const b = r[i + 3];
+        if (
+          x instanceof IdentifierToken &&
+          (a instanceof StringToken || a instanceof NumberToken) &&
+          and === AndToken.TOKEN &&
+          (b instanceof StringToken || b instanceof NumberToken)
+        ) {
+          const before = r.slice(0, i - 1);
+          const after = r.slice(i + 4);
+          // (x >= a AND x <=b)
+          const expandedBetween = [
+            LParenToken.TOKEN,
+            x,
+            GreaterThanOrEqualToken.TOKEN,
+            a,
+            AndToken.TOKEN,
+            x,
+            LessThanOrEqualToken.TOKEN,
+            b,
+            RParenToken.TOKEN,
+          ];
+          r = [...before, ...expandedBetween, ...after];
+          i += 5;
+        }
       }
     }
     return r;

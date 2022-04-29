@@ -214,7 +214,7 @@ export class LessThanToken extends Token {
 }
 
 export class LessThanOrEqualToken extends Token {
-  static readonly TOKEN = new LessThanToken();
+  static readonly TOKEN = new LessThanOrEqualToken();
 
   toString(): string {
     return '<=';
@@ -230,7 +230,7 @@ export class GreaterThanToken extends Token {
 }
 
 export class GreaterThanOrEqualToken extends Token {
-  static readonly TOKEN = new GreaterThanToken();
+  static readonly TOKEN = new GreaterThanOrEqualToken();
 
   toString(): string {
     return '>=';

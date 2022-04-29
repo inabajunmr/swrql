@@ -12,8 +12,10 @@ import {
   IdentifierToken,
   LessThanOrEqualToken,
   LessThanToken,
+  LParenToken,
   NumberToken,
   OrderByToken,
+  RParenToken,
   SelectToken,
   StringToken,
   WhereToken,
@@ -118,6 +120,56 @@ test('a <> b', () => {
   expect(actual[1]).toStrictEqual(DiamondToken.TOKEN);
   expect(actual[2]).toStrictEqual(new IdentifierToken('b'));
   expect(actual[3]).toStrictEqual(EOFToken.TOKEN);
+});
+
+test('x BETWEEN 1 AND 2', () => {
+  const lexer = new SQLLexer('x BETWEEN 1 AND 2');
+  const actual = lexer.tokens();
+  expect(actual.length).toBe(10);
+  expect(actual[0]).toStrictEqual(LParenToken.TOKEN);
+  expect(actual[1]).toStrictEqual(new IdentifierToken('x'));
+  expect(actual[2]).toStrictEqual(GreaterThanOrEqualToken.TOKEN);
+  expect(actual[3]).toStrictEqual(new NumberToken('1'));
+  expect(actual[4]).toStrictEqual(AndToken.TOKEN);
+  expect(actual[5]).toStrictEqual(new IdentifierToken('x'));
+  expect(actual[6]).toStrictEqual(LessThanOrEqualToken.TOKEN);
+  expect(actual[7]).toStrictEqual(new NumberToken('2'));
+  expect(actual[8]).toStrictEqual(RParenToken.TOKEN);
+  expect(actual[9]).toStrictEqual(EOFToken.TOKEN);
+});
+
+test('x BETWEEN 1 AND 2 AND a=1 AND y BETWEEN 3 AND 4', () => {
+  const lexer = new SQLLexer(
+    `x BETWEEN 1 AND 2 AND a=1 AND y BETWEEN 'xxx' AND 'yyy'`
+  );
+  const actual = lexer.tokens();
+  expect(actual.length).toBe(24);
+  expect(actual[0]).toStrictEqual(LParenToken.TOKEN);
+  expect(actual[1]).toStrictEqual(new IdentifierToken('x'));
+  expect(actual[2]).toStrictEqual(GreaterThanOrEqualToken.TOKEN);
+  expect(actual[3]).toStrictEqual(new NumberToken('1'));
+  expect(actual[4]).toStrictEqual(AndToken.TOKEN);
+  expect(actual[5]).toStrictEqual(new IdentifierToken('x'));
+  expect(actual[6]).toStrictEqual(LessThanOrEqualToken.TOKEN);
+  expect(actual[7]).toStrictEqual(new NumberToken('2'));
+  expect(actual[8]).toStrictEqual(RParenToken.TOKEN);
+
+  expect(actual[9]).toStrictEqual(AndToken.TOKEN);
+  expect(actual[10]).toStrictEqual(new IdentifierToken('a'));
+  expect(actual[11]).toStrictEqual(EqualToken.TOKEN);
+  expect(actual[12]).toStrictEqual(new NumberToken('1'));
+  expect(actual[13]).toStrictEqual(AndToken.TOKEN);
+
+  expect(actual[14]).toStrictEqual(LParenToken.TOKEN);
+  expect(actual[15]).toStrictEqual(new IdentifierToken('y'));
+  expect(actual[16]).toStrictEqual(GreaterThanOrEqualToken.TOKEN);
+  expect(actual[17]).toStrictEqual(new StringToken('xxx'));
+  expect(actual[18]).toStrictEqual(AndToken.TOKEN);
+  expect(actual[19]).toStrictEqual(new IdentifierToken('y'));
+  expect(actual[20]).toStrictEqual(LessThanOrEqualToken.TOKEN);
+  expect(actual[21]).toStrictEqual(new StringToken('yyy'));
+  expect(actual[22]).toStrictEqual(RParenToken.TOKEN);
+  expect(actual[23]).toStrictEqual(EOFToken.TOKEN);
 });
 
 test('SELECT * FROM abc ORDER BY a;', () => {
