@@ -53,11 +53,7 @@ export class SQLParser {
     const tables = [];
     let current = this.tokens.shift();
     {
-      while (
-        !(current instanceof WhereToken) &&
-        !(current instanceof EOFToken) &&
-        !(current instanceof OrderByToken)
-      ) {
+      while (!current?.isClauseDelimiter()) {
         if (current instanceof IdentifierToken) {
           tables.push((current as IdentifierToken).literal);
         } else if (!(current instanceof CommaToken)) {
@@ -82,7 +78,7 @@ export class SQLParser {
       return new SelectData(fields, tables, predicate, [], true);
     }
     current = this.tokens.shift();
-    while (current !== EOFToken.TOKEN) {
+    while (!current?.isClauseDelimiter()) {
       if (current instanceof IdentifierToken) {
         sortKeys.push(current.literal);
         if (this.tokens[0] instanceof IdentifierToken) {
@@ -110,7 +106,7 @@ export class SQLParser {
     // shunting-yard
     const result: Token[] = [];
     const stack: Token[] = [EOFToken.TOKEN];
-    while (this.tokens.length > 0 && this.tokens[0] !== OrderByToken.TOKEN) {
+    while (this.tokens.length > 0 && !this.tokens[0].isClauseDelimiter()) {
       const current = this.tokens[0];
       if (
         getStackPriority(stack[stack.length - 1]) > getInputPriority(current)
@@ -119,13 +115,17 @@ export class SQLParser {
         if (s !== RParenToken.TOKEN && s !== LParenToken.TOKEN) {
           result.push(s as Token);
         }
-      } else if (this.tokens[0] !== OrderByToken.TOKEN) {
+      } else if (!this.tokens[0].isClauseDelimiter()) {
         stack.push(this.tokens.shift() as Token);
       }
     }
     while (stack.length > 0) {
       const s = stack.pop();
-      if (s !== OrderByToken.TOKEN && s !== EOFToken.TOKEN) {
+      if (
+        !s?.isClauseDelimiter() &&
+        s !== RParenToken.TOKEN &&
+        s !== LParenToken.TOKEN
+      ) {
         result.push(s as Token);
       }
     }

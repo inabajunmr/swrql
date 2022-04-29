@@ -5,6 +5,9 @@ export abstract class Token {
   getInputPriority(): number {
     return 0;
   }
+  isClauseDelimiter(): boolean {
+    return false;
+  }
 }
 
 /**
@@ -81,6 +84,10 @@ export class SelectToken extends Token {
   toString(): string {
     return `SELECT`;
   }
+
+  isClauseDelimiter(): boolean {
+    return true;
+  }
 }
 
 /**
@@ -92,6 +99,9 @@ export class FromToken extends Token {
   toString(): string {
     return `FROM`;
   }
+  isClauseDelimiter(): boolean {
+    return true;
+  }
 }
 
 /**
@@ -102,6 +112,9 @@ export class WhereToken extends Token {
 
   toString(): string {
     return `WHERE`;
+  }
+  isClauseDelimiter(): boolean {
+    return true;
   }
 }
 
@@ -132,9 +145,11 @@ export class OrToken extends Token {
  */
 export class OrderByToken extends Token {
   static readonly TOKEN = new OrderByToken();
-
   toString(): string {
     return `ORDER BY`;
+  }
+  isClauseDelimiter(): boolean {
+    return true;
   }
 }
 
@@ -241,5 +256,8 @@ export class EOFToken extends Token {
 
   toString(): string {
     return `EOF`;
+  }
+  isClauseDelimiter(): boolean {
+    return true;
   }
 }
