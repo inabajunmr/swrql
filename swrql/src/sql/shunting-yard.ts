@@ -5,11 +5,14 @@ import {
   EqualToken,
   GreaterThanOrEqualToken,
   GreaterThanToken,
+  IdentifierToken,
   LessThanOrEqualToken,
   LessThanToken,
   LParenToken,
+  NumberToken,
   OrToken,
   RParenToken,
+  StringToken,
   Token,
 } from './token';
 
@@ -35,10 +38,16 @@ export function getInputPriority(t: Token): number {
       return 21;
     case DiamondToken.TOKEN:
       return 21;
-    case EOFToken.TOKEN:
-      return 0;
     default:
-      return 30;
+      if (
+        t instanceof IdentifierToken ||
+        t instanceof NumberToken ||
+        t instanceof StringToken
+      ) {
+        return 30;
+      } else {
+        return 0;
+      }
   }
 }
 

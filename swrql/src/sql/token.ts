@@ -128,6 +128,17 @@ export class OrToken extends Token {
 }
 
 /**
+ * ORDER BY
+ */
+export class OrderByToken extends Token {
+  static readonly TOKEN = new OrderByToken();
+
+  toString(): string {
+    return `ORDER BY`;
+  }
+}
+
+/**
  * ,
  */
 export class CommaToken extends Token {

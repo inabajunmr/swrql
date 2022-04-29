@@ -8,6 +8,7 @@ import {
   FromToken,
   IdentifierToken,
   LParenToken,
+  OrderByToken,
   RParenToken,
   SelectToken,
   Token,
@@ -48,12 +49,14 @@ export class SQLParser {
       }
     }
 
+    // TABLES
     const tables = [];
     let current = this.tokens.shift();
     {
       while (
         !(current instanceof WhereToken) &&
-        !(current instanceof EOFToken)
+        !(current instanceof EOFToken) &&
+        !(current instanceof OrderByToken)
       ) {
         if (current instanceof IdentifierToken) {
           tables.push((current as IdentifierToken).literal);
@@ -63,19 +66,52 @@ export class SQLParser {
         current = this.tokens.shift();
       }
     }
+
+    // WHERE
+    let predicate = new Predicate([]);
     if (current === WhereToken.TOKEN) {
       // remove where
-      return new SelectData(fields, tables, this.parsePredicate());
-    } else {
-      return new SelectData(fields, tables, new Predicate([]));
+      predicate = this.parsePredicate();
+      current = this.tokens.shift();
     }
+
+    // ORDER BY
+    const sortKeys = [];
+    let isASC = true;
+    if (current !== OrderByToken.TOKEN) {
+      return new SelectData(fields, tables, predicate, [], true);
+    }
+    current = this.tokens.shift();
+    while (current !== EOFToken.TOKEN) {
+      if (current instanceof IdentifierToken) {
+        sortKeys.push(current.literal);
+        if (this.tokens[0] instanceof IdentifierToken) {
+          // last token is sort order.
+          break;
+        }
+      } else if (current !== CommaToken.TOKEN) {
+        console.log('current:' + current);
+        throw new Error('Field list at ORDER BY clause is something wrong.');
+      }
+      current = this.tokens.shift();
+    }
+
+    // ASC or DESC
+    current = this.tokens[0];
+    if (
+      current instanceof IdentifierToken &&
+      current.literal.toUpperCase() === 'DESC'
+    ) {
+      isASC = false;
+    }
+    return new SelectData(fields, tables, predicate, sortKeys, isASC);
   }
 
   private parsePredicate(): Predicate {
     // shunting-yard
     const result: Token[] = [];
     const stack: Token[] = [EOFToken.TOKEN];
-    while (this.tokens.length > 0) {
+    while (this.tokens.length > 0 && this.tokens[0] !== OrderByToken.TOKEN) {
       const current = this.tokens[0];
       if (
         getStackPriority(stack[stack.length - 1]) > getInputPriority(current)
@@ -84,8 +120,14 @@ export class SQLParser {
         if (s !== RParenToken.TOKEN && s !== LParenToken.TOKEN) {
           result.push(s as Token);
         }
-      } else {
+      } else if (this.tokens[0] !== OrderByToken.TOKEN) {
         stack.push(this.tokens.shift() as Token);
+      }
+    }
+    while (stack.length > 0) {
+      const s = stack.pop();
+      if (s !== OrderByToken.TOKEN && s !== EOFToken.TOKEN) {
+        result.push(s as Token);
       }
     }
 
@@ -97,10 +139,20 @@ export class SelectData {
   readonly fields: string[];
   readonly tables: string[];
   readonly where: Predicate;
+  readonly sortKey: string[];
+  readonly isAsc: boolean;
 
-  constructor(fields: string[], tables: string[], where: Predicate) {
+  constructor(
+    fields: string[],
+    tables: string[],
+    where: Predicate,
+    sortKey: string[],
+    isAsc: boolean
+  ) {
     this.fields = fields;
     this.tables = tables;
     this.where = where;
+    this.sortKey = sortKey;
+    this.isAsc = isAsc;
   }
 }

@@ -13,6 +13,7 @@ import {
   GreaterThanToken,
   GreaterThanOrEqualToken,
   DiamondToken,
+  OrderByToken,
 } from './token';
 
 export class SQLLexer {
@@ -28,7 +29,17 @@ export class SQLLexer {
     const r: Token[] = [];
     while (t instanceof EOFToken == false) {
       t = this.nextToken();
-      r.push(t);
+      const before = r[r.length - 1];
+      if (
+        t instanceof IdentifierToken &&
+        t.literal.toUpperCase() == 'BY' &&
+        before instanceof IdentifierToken &&
+        before.literal.toUpperCase() == 'ORDER'
+      ) {
+        r[r.length - 1] = OrderByToken.TOKEN;
+      } else {
+        r.push(t);
+      }
     }
     return r;
   }

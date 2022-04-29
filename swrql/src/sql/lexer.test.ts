@@ -13,6 +13,7 @@ import {
   LessThanOrEqualToken,
   LessThanToken,
   NumberToken,
+  OrderByToken,
   SelectToken,
   StringToken,
   WhereToken,
@@ -117,6 +118,19 @@ test('a <> b', () => {
   expect(actual[1]).toStrictEqual(DiamondToken.TOKEN);
   expect(actual[2]).toStrictEqual(new IdentifierToken('b'));
   expect(actual[3]).toStrictEqual(EOFToken.TOKEN);
+});
+
+test('SELECT * FROM abc ORDER BY a;', () => {
+  const lexer = new SQLLexer('SELECT * FROM abc ORDER BY a;');
+  const actual = lexer.tokens();
+  expect(actual.length).toBe(7);
+  expect(actual[0]).toStrictEqual(SelectToken.TOKEN);
+  expect(actual[1]).toStrictEqual(AsteriskToken.TOKEN);
+  expect(actual[2]).toStrictEqual(FromToken.TOKEN);
+  expect(actual[3]).toStrictEqual(new IdentifierToken('abc'));
+  expect(actual[4]).toStrictEqual(OrderByToken.TOKEN);
+  expect(actual[5]).toStrictEqual(new IdentifierToken('a'));
+  expect(actual[6]).toStrictEqual(EOFToken.TOKEN);
 });
 
 test("SELECT * FROM abc WHERE a='a;", () => {
