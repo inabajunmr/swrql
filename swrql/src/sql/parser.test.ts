@@ -2,6 +2,8 @@ import { SQLParser } from './parser';
 import {
   AndToken,
   EqualToken,
+  GreaterThanOrEqualToken,
+  GreaterThanToken,
   IdentifierToken,
   NumberToken,
   OrToken,
@@ -25,6 +27,28 @@ test('SELECT * FROM abc WHERE a=1;', () => {
   expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
   expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));
   expect(actual.where.tokens[2]).toStrictEqual(EqualToken.TOKEN);
+});
+
+test('SELECT * FROM abc WHERE a > 1;', () => {
+  const parser = new SQLParser('SELECT * FROM abc WHERE a > 1;');
+  const actual = parser.parse();
+  expect(actual.fields).toContain('*');
+  expect(actual.tables[0]).toContain('abc');
+  expect(actual.where.tokens).toHaveLength(3);
+  expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
+  expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));
+  expect(actual.where.tokens[2]).toStrictEqual(GreaterThanToken.TOKEN);
+});
+
+test('SELECT * FROM abc WHERE a >= 1;', () => {
+  const parser = new SQLParser('SELECT * FROM abc WHERE a >= 1;');
+  const actual = parser.parse();
+  expect(actual.fields).toContain('*');
+  expect(actual.tables[0]).toContain('abc');
+  expect(actual.where.tokens).toHaveLength(3);
+  expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
+  expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));
+  expect(actual.where.tokens[2]).toStrictEqual(GreaterThanOrEqualToken.TOKEN);
 });
 
 test(`SELECT a,b,c FROM abc WHERE a=1 AND b='abc';`, () => {

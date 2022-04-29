@@ -58,15 +58,11 @@ export class SQLParser {
         if (current instanceof IdentifierToken) {
           tables.push((current as IdentifierToken).literal);
         } else if (!(current instanceof CommaToken)) {
-          console.log(current);
           throw new Error('Field list at FROM clause is something wrong.');
         }
         current = this.tokens.shift();
       }
     }
-
-    console.log(current);
-
     if (current === WhereToken.TOKEN) {
       // remove where
       return new SelectData(fields, tables, this.parsePredicate());

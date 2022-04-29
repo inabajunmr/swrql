@@ -1,7 +1,12 @@
 import {
   AndToken,
+  DiamondToken,
   EOFToken,
   EqualToken,
+  GreaterThanOrEqualToken,
+  GreaterThanToken,
+  LessThanOrEqualToken,
+  LessThanToken,
   LParenToken,
   OrToken,
   RParenToken,
@@ -20,6 +25,16 @@ export function getInputPriority(t: Token): number {
       return 1;
     case EqualToken.TOKEN:
       return 21;
+    case GreaterThanToken.TOKEN:
+      return 21;
+    case GreaterThanOrEqualToken.TOKEN:
+      return 21;
+    case LessThanToken.TOKEN:
+      return 21;
+    case LessThanOrEqualToken.TOKEN:
+      return 21;
+    case DiamondToken.TOKEN:
+      return 21;
     case EOFToken.TOKEN:
       return 0;
     default:
@@ -36,6 +51,16 @@ export function getStackPriority(t: Token): number {
     case LParenToken.TOKEN:
       return 1;
     case EqualToken.TOKEN:
+      return 22;
+    case GreaterThanToken.TOKEN:
+      return 22;
+    case GreaterThanOrEqualToken.TOKEN:
+      return 22;
+    case LessThanToken.TOKEN:
+      return 22;
+    case LessThanOrEqualToken.TOKEN:
+      return 22;
+    case DiamondToken.TOKEN:
       return 22;
     case EOFToken.TOKEN:
       return 0;

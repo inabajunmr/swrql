@@ -65,6 +65,24 @@ foo,bar,baz`
   expect(actual.records.length).toBe(3);
 });
 
+test('select * from abc where a >= 2;', () => {
+  const table1 = new CSVScan(
+    'abc',
+    `a,b,c
+1,2,3
+2,3,4
+3,4,5`
+  );
+  const sqlExecution = new SQLExecution(
+    [table1],
+    'select * from abc where a >= 2;'
+  );
+  const actual = sqlExecution.execute();
+  assertRecord(actual.records[0], { a: '2', b: '3', c: '4' });
+  assertRecord(actual.records[1], { a: '3', b: '4', c: '5' });
+  expect(actual.records.length).toBe(2);
+});
+
 test(`select * from abc where a=1 OR b='bar';`, () => {
   const table1 = new CSVScan(
     'abc',

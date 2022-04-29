@@ -45,3 +45,9 @@ test(`a=1 OR b='bar';`, () => {
     .where;
   expect(sut.test(new Record({ a: 'foo', b: 'bar', c: 'baz' }))).toBe(true);
 });
+
+test('a>1', () => {
+  const sut = new SQLParser('SELECT * FROM abc WHERE a>1;').parse().where;
+  expect(sut.test(new Record({ a: '1' }))).toBe(false);
+  expect(sut.test(new Record({ a: '2' }))).toBe(true);
+});

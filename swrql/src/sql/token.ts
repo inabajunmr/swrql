@@ -179,6 +179,49 @@ export class RParenToken extends Token {
   }
 }
 
+export class LessThanToken extends Token {
+  static readonly TOKEN = new LessThanToken();
+
+  toString(): string {
+    return '<';
+  }
+}
+
+export class LessThanOrEqualToken extends Token {
+  static readonly TOKEN = new LessThanToken();
+
+  toString(): string {
+    return '<=';
+  }
+}
+
+export class GreaterThanToken extends Token {
+  static readonly TOKEN = new GreaterThanToken();
+
+  toString(): string {
+    return '>';
+  }
+}
+
+export class GreaterThanOrEqualToken extends Token {
+  static readonly TOKEN = new GreaterThanToken();
+
+  toString(): string {
+    return '>=';
+  }
+}
+
+/**
+ * <>
+ */
+export class DiamondToken extends Token {
+  static readonly TOKEN = new DiamondToken();
+
+  toString(): string {
+    return '<>';
+  }
+}
+
 /**
  * EOF
  */

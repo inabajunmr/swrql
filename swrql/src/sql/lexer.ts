@@ -8,6 +8,11 @@ import {
   StringToken,
   LParenToken,
   RParenToken,
+  LessThanToken,
+  LessThanOrEqualToken,
+  GreaterThanToken,
+  GreaterThanOrEqualToken,
+  DiamondToken,
 } from './token';
 
 export class SQLLexer {
@@ -56,6 +61,10 @@ export class SQLLexer {
       case "'":
         this.nextChar();
         return new StringToken(this.readString());
+      case '<':
+        return this.readComparativeOperator();
+      case '>':
+        return this.readComparativeOperator();
       default: {
         return new IdentifierToken(this.readIdentifier()).asKeyword();
       }
@@ -91,6 +100,28 @@ export class SQLLexer {
     }
 
     return result;
+  }
+
+  private readComparativeOperator(): Token {
+    let result = '';
+    while (this.now().match(/[<>=]/) && !this.isEOF()) {
+      result += this.now();
+      this.nextChar();
+    }
+
+    switch (result) {
+      case '<':
+        return LessThanToken.TOKEN;
+      case '<=':
+        return LessThanOrEqualToken.TOKEN;
+      case '>':
+        return GreaterThanToken.TOKEN;
+      case '>=':
+        return GreaterThanOrEqualToken.TOKEN;
+      case '<>':
+        return DiamondToken.TOKEN;
+    }
+    throw Error(`${result} operator is not supported.`);
   }
 
   private readString(): string {
