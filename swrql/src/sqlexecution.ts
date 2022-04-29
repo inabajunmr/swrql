@@ -18,13 +18,16 @@ export class SQLExecution {
 
   execute(): SQLExecutionResult {
     const select = new SQLParser(this.sql).parse();
+
     const targetTables = this.tables.filter((s) => {
       return select.tables.includes(s.tableName);
     });
 
-    if (targetTables.length === 0) {
-      throw new Error(`${select.tables} is not found.`);
-    }
+    select.tables.forEach((t) => {
+      if (!this.tables.map((v) => v.tableName).includes(t)) {
+        throw new Error(`${t} is not found.`);
+      }
+    });
 
     // Product
     let projected = targetTables.shift() as Scan;
