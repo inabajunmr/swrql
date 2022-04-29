@@ -5,6 +5,7 @@ import { Scan } from './scan/scan';
 import { Record } from './scan/record';
 import { SelectScan } from './scan/selectscan';
 import { SQLParser } from './sql/parser';
+import { SortScan } from './scan/sortscan';
 
 export class SQLExecution {
   private readonly tables: CSVScan[];
@@ -37,13 +38,19 @@ export class SQLExecution {
     // // Project
     const projectScan = new ProjectScan(selectScan, select.fields);
 
-    // build result
-    const result = [];
-    while (projectScan.next()) {
-      result.push(projectScan.getRecord());
+    // Sort
+    let scan: Scan = projectScan;
+    if (select.sortKey.length !== 0) {
+      scan = new SortScan(projectScan, select.sortKey, select.isAsc);
     }
 
-    return new SQLExecutionResult(result, projectScan.fields());
+    // build result
+    const result = [];
+    while (scan.next()) {
+      result.push(scan.getRecord());
+    }
+
+    return new SQLExecutionResult(result, scan.fields());
   }
 }
 
