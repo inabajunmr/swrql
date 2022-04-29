@@ -47,7 +47,6 @@ test('SELECT * FROM abc ORDER BY a,b,c DESC;', () => {
 test('SELECT * FROM abc WHERE a=1;', () => {
   const parser = new SQLParser('SELECT * FROM abc WHERE a=1;');
   const actual = parser.parse();
-  console.log(actual.where);
   expect(actual.fields).toContain('*');
   expect(actual.tables[0]).toContain('abc');
   expect(actual.where.tokens).toHaveLength(3);
@@ -129,7 +128,6 @@ test(`SELECT a,b,c FROM abc WHERE a=1 AND (b='abc' OR c=2);`, () => {
 
   // a 1 = b abc = c 2 = OR AND
   expect(actual.where.tokens).toHaveLength(11);
-  console.log(actual.where);
   expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
   expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));
   expect(actual.where.tokens[2]).toStrictEqual(EqualToken.TOKEN);

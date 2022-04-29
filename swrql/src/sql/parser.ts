@@ -90,7 +90,6 @@ export class SQLParser {
           break;
         }
       } else if (current !== CommaToken.TOKEN) {
-        console.log('current:' + current);
         throw new Error('Field list at ORDER BY clause is something wrong.');
       }
       current = this.tokens.shift();
