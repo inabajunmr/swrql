@@ -37,7 +37,8 @@ export class SQLLexer {
         t instanceof IdentifierToken &&
         t.literal.toUpperCase() == 'BY' &&
         before instanceof IdentifierToken &&
-        (before.literal.toUpperCase() == 'ORDER' || before.literal.toUpperCase() == 'GROUP')
+        (before.literal.toUpperCase() == 'ORDER' ||
+          before.literal.toUpperCase() == 'GROUP')
       ) {
         if (before.literal.toUpperCase() == 'ORDER') {
           r[r.length - 1] = OrderByToken.TOKEN;

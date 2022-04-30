@@ -38,9 +38,10 @@ test('SELECT a, count(*) FROM abc ORDER BY a,b;', () => {
   expect(actual.where.tokens).toHaveLength(0);
 });
 
-
 test('SELECT a, count(*) FROM abc WHERE c=1 ORDER BY a,b;', () => {
-  const parser = new SQLParser('SELECT a, count(*) FROM abc WHERE c=1 ORDER BY a,b;');
+  const parser = new SQLParser(
+    'SELECT a, count(*) FROM abc WHERE c=1 ORDER BY a,b;'
+  );
   const actual = parser.parse();
   expect(actual.fields[0]).toStrictEqual(new SelectField('a'));
   expect(actual.fields[1]).toStrictEqual(new SelectFunction('count', '*'));
@@ -82,7 +83,9 @@ test('SELECT * FROM abc GROUP BY a,b,c;', () => {
 });
 
 test('SELECT * FROM abc GROUP BY a,b,c ORDER BY x,y;', () => {
-  const parser = new SQLParser('SELECT * FROM abc GROUP BY a,b,c ORDER BY x,y;');
+  const parser = new SQLParser(
+    'SELECT * FROM abc GROUP BY a,b,c ORDER BY x,y;'
+  );
   const actual = parser.parse();
   expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
   expect(actual.fields.length).toBe(1);

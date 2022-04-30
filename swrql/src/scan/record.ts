@@ -30,4 +30,16 @@ export class Record {
   unwrap() {
     return this.record;
   }
+
+  equals(record: Record): boolean {
+    if (this.size() !== record.size()) {
+      return false;
+    }
+    for (const key of record.keys()) {
+      if (this.get(key) !== record.get(key)) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

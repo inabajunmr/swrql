@@ -40,23 +40,28 @@ export class SQLParser {
         if (current instanceof IdentifierToken) {
           fields.push(new SelectField(current.literal));
         } else if (current instanceof LParenToken) {
-          const functionType = fields.pop()
+          const functionType = fields.pop();
           if (!(functionType instanceof SelectField)) {
             throw Error(`Unexpected error. ${functionType}`);
           }
           const argToken = this.tokens.shift();
           let arg: string;
           if (argToken instanceof IdentifierToken) {
-            arg = argToken.literal
+            arg = argToken.literal;
           } else if (argToken instanceof AsteriskToken) {
-            arg = '*'
+            arg = '*';
           } else {
             throw Error(`Argument of ${functionType} is something wrong.`);
           }
           if (this.tokens.shift() !== RParenToken.TOKEN) {
-            throw Error('function in SELECT-CLAUSE is something wrong.')
+            throw Error('function in SELECT-CLAUSE is something wrong.');
           }
-          fields.push(new SelectFunction(functionType.fieldName as selectFunctionType, arg));
+          fields.push(
+            new SelectFunction(
+              functionType.fieldName as selectFunctionType,
+              arg
+            )
+          );
         } else if (current instanceof AsteriskToken) {
           fields.push(new SelectField('*'));
           this.tokens.shift();
@@ -132,7 +137,14 @@ export class SQLParser {
     ) {
       isASC = false;
     }
-    return new SelectData(fields, tables, predicate, groupByKeys, sortKeys, isASC);
+    return new SelectData(
+      fields,
+      tables,
+      predicate,
+      groupByKeys,
+      sortKeys,
+      isASC
+    );
   }
 
   private parsePredicate(): Predicate {
@@ -192,12 +204,17 @@ export class SelectData {
   }
 }
 
-export interface SelectTarget { }
+export interface SelectTarget {
+  toFieldName(): string;
+}
 
 export class SelectField implements SelectTarget {
   readonly fieldName: string;
   constructor(fieldName: string) {
     this.fieldName = fieldName;
+  }
+  toFieldName(): string {
+    return this.fieldName;
   }
 }
 
@@ -210,5 +227,7 @@ export class SelectFunction implements SelectTarget {
     this.functionType = functionType;
     this.arg = arg;
   }
-
+  toFieldName(): string {
+    return `${this.functionType}(${this.arg})`;
+  }
 }
