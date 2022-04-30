@@ -3,12 +3,28 @@ import * as swrql from 'swrql';
 
 let tableCount = 0;
 addTable();
-(document.getElementById("csv1") as HTMLTextAreaElement).value = `a,b,c
-1,2,3
-x,y,z
-one,two,three`;
-(document.getElementById("sql") as HTMLTextAreaElement).value = `select * from abc where a=1;`;
-(document.getElementById("tablename1") as HTMLTextAreaElement).value = `abc`;
+(document.getElementById("tablename1") as HTMLTextAreaElement).value = `student`;
+(document.getElementById("csv1") as HTMLTextAreaElement).value = 
+`SId, SName, GradYear, MajorId
+1, joe, 2021, 10
+2, amy, 2020, 20
+3, max, 2022, 10
+4, sue, 2022, 20
+5, bob, 2020, 30
+6, kim, 2020, 20
+7, art, 2021, 30
+8, pat, 2019, 20
+9, lee, 2021, 10
+`;
+addTable();
+(document.getElementById("tablename2") as HTMLTextAreaElement).value = `dept`;
+(document.getElementById("csv2") as HTMLTextAreaElement).value = 
+`DId, DName
+10, compsci
+20, math
+30, drama
+`;
+(document.getElementById("sql") as HTMLTextAreaElement).value = `select DName, count(*) from student,dept where MajorId=DId group by DName;`;
 
 export function execute(): void {
     document.getElementById("error")!.textContent = '';

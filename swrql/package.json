@@ -1,6 +1,6 @@
 {
   "name": "swrql",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "swrql is SQL processor for CSV.",
   "main": "dist/index.js",
   "files": [
