@@ -1,4 +1,4 @@
-import { SelectFunction } from '../sql/parser';
+import { SelectFunction, selectFunctionType } from '../sql/parser';
 import { Record } from './record';
 import { Scan } from './scan';
 import { SortScan } from './sortscan';
@@ -59,7 +59,6 @@ export class GroupScan implements Scan {
       const arg = f.arg;
       const type = f.functionType;
       let compute = this.currentAggregation.reduce((previous, current) => {
-        // TODO count
         switch (type) {
           case 'count':
             return ++previous;
@@ -67,10 +66,19 @@ export class GroupScan implements Scan {
             return previous + parseFloat(current.get(arg));
           case 'avg':
             return previous + parseFloat(current.get(arg));
+          case 'max':
+            return previous > parseFloat(current.get(arg))
+              ? previous
+              : parseFloat(current.get(arg));
+          case 'min':
+            return previous < parseFloat(current.get(arg))
+              ? previous
+              : parseFloat(current.get(arg));
           default:
             throw Error(`function ${type} is not supported.`);
         }
-      }, 0);
+      }, this.computeInitial(type));
+
       if (type === 'avg') {
         compute = compute / this.currentAggregation.length;
       }
@@ -78,6 +86,23 @@ export class GroupScan implements Scan {
     });
     const a = record.merge(new Record(aggregated));
     return a;
+  }
+
+  private computeInitial(type: selectFunctionType): number {
+    switch (type) {
+      case 'count':
+        return 0;
+      case 'sum':
+        return 0;
+      case 'avg':
+        return 0;
+      case 'max':
+        return Number.MIN_VALUE;
+      case 'min':
+        return Number.MAX_VALUE;
+      default:
+        throw Error(`function ${type} is not supported.`);
+    }
   }
 
   rewind(): void {

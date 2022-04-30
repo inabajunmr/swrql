@@ -132,6 +132,64 @@ test('single column avg', () => {
   expect(groupScan.next()).toBe(false);
 });
 
+test('single column min', () => {
+  const csv = new CSVScan(
+    'abc',
+    `a,b,c
+            a,1,2
+            a,3,4
+            b,7,8
+            a,2,3
+            c,9,10
+            d,11,12
+            b,5,6
+            d,13,14`
+  );
+
+  const groupScan = new GroupScan(csv, ['a'], [new SelectFunction('min', 'b')]);
+  expect(groupScan.fields()).toHaveLength(2);
+  expect(groupScan.fields()[0]).toBe('a');
+  expect(groupScan.fields()[1]).toBe('min(b)');
+  expect(groupScan.next()).toBe(true);
+  assertRecord(groupScan.getRecord(), { a: 'a', 'min(b)': '1' });
+  expect(groupScan.next()).toBe(true);
+  assertRecord(groupScan.getRecord(), { a: 'b', 'min(b)': '5' });
+  expect(groupScan.next()).toBe(true);
+  assertRecord(groupScan.getRecord(), { a: 'c', 'min(b)': '9' });
+  expect(groupScan.next()).toBe(true);
+  assertRecord(groupScan.getRecord(), { a: 'd', 'min(b)': '11' });
+  expect(groupScan.next()).toBe(false);
+});
+
+test('single column max', () => {
+  const csv = new CSVScan(
+    'abc',
+    `a,b,c
+            a,1,2
+            a,3,4
+            b,7,8
+            a,2,3
+            c,9,10
+            d,11,12
+            b,5,6
+            d,13,14`
+  );
+
+  const groupScan = new GroupScan(csv, ['a'], [new SelectFunction('max', 'b')]);
+  expect(groupScan.fields()).toHaveLength(2);
+  expect(groupScan.fields()[0]).toBe('a');
+  expect(groupScan.fields()[1]).toBe('max(b)');
+  expect(groupScan.next()).toBe(true);
+  assertRecord(groupScan.getRecord(), { a: 'a', 'max(b)': '3' });
+  expect(groupScan.next()).toBe(true);
+  assertRecord(groupScan.getRecord(), { a: 'b', 'max(b)': '7' });
+  expect(groupScan.next()).toBe(true);
+  assertRecord(groupScan.getRecord(), { a: 'c', 'max(b)': '9' });
+  expect(groupScan.next()).toBe(true);
+  assertRecord(groupScan.getRecord(), { a: 'd', 'max(b)': '13' });
+  expect(groupScan.next()).toBe(false);
+});
+
 function assertRecord(record: Record, expected: any) {
   Object.keys(expected).forEach((k) => {
     expect(record.get(k)).toBe(expected[k]);
