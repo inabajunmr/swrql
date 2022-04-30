@@ -36,6 +36,10 @@ export class IdentifierToken extends Token {
         return AndToken.TOKEN;
       case 'OR':
         return OrToken.TOKEN;
+      case 'JOIN':
+        return JoinToken.TOKEN;
+      case 'ON':
+        return OnToken.TOKEN;
     }
 
     if (this.literal.match(/^[0-9]/)) {
@@ -163,6 +167,32 @@ export class GroupByToken extends Token {
   }
   isClauseDelimiter(): boolean {
     return true;
+  }
+}
+
+/**
+ * JOIN
+ */
+export class JoinToken extends Token {
+  static readonly TOKEN = new JoinToken();
+  toString(): string {
+    return `JOIN`;
+  }
+  isClauseDelimiter(): boolean {
+    return false;
+  }
+}
+
+/**
+ * ON
+ */
+export class OnToken extends Token {
+  static readonly TOKEN = new OnToken();
+  toString(): string {
+    return `ON`;
+  }
+  isClauseDelimiter(): boolean {
+    return false;
   }
 }
 

@@ -8,7 +8,9 @@ import {
   FromToken,
   GroupByToken,
   IdentifierToken,
+  JoinToken,
   LParenToken,
+  OnToken,
   OrderByToken,
   RParenToken,
   SelectToken,
@@ -80,7 +82,26 @@ export class SQLParser {
       while (!current?.isClauseDelimiter()) {
         if (current instanceof IdentifierToken) {
           tables.push((current as IdentifierToken).literal);
-        } else if (!(current instanceof CommaToken)) {
+        } else if (current instanceof JoinToken) {
+          // TODO test
+          const joinTable = this.tokens.shift()
+          const on = this.tokens.shift();
+          if (!(on instanceof OnToken)) {
+            throw new Error(`No JOIN condition.`)
+          }
+          const pre = this.parsePredicate();
+          if (joinTable instanceof IdentifierToken) {
+            tables.push(new JoinTable('inner', joinTable.literal, pre))
+          } else {
+            throw new Error(`JOIN needs target table.`)
+          }
+        } else if (current instanceof CommaToken) {
+          // TODO test
+          const joinTable = this.tokens.shift()
+          if (joinTable instanceof IdentifierToken) {
+            tables.push(new JoinTable('project', joinTable.literal, undefined))
+          }
+        } else {
           throw new Error('Field list at FROM clause is something wrong.');
         }
         current = this.tokens.shift();
@@ -181,7 +202,7 @@ export class SQLParser {
 
 export class SelectData {
   readonly fields: SelectTarget[];
-  readonly tables: string[];
+  readonly tables: (string | JoinTable)[];
   readonly where: Predicate;
   readonly groupByKeys: string[];
   readonly sortKey: string[];
@@ -189,7 +210,7 @@ export class SelectData {
 
   constructor(
     fields: SelectTarget[],
-    tables: string[],
+    tables: (string | JoinTable)[],
     where: Predicate,
     groupByKeys: string[],
     sortKey: string[],
@@ -229,5 +250,18 @@ export class SelectFunction implements SelectTarget {
   }
   toFieldName(): string {
     return `${this.functionType}(${this.arg})`;
+  }
+}
+
+export type joinType = 'project' | 'inner'
+export class JoinTable {
+  readonly joinType: joinType;
+  readonly tableName: string;
+  readonly predicate: Predicate | undefined;
+
+  constructor(joinType: joinType, tableName: string, predicate: Predicate | undefined) {
+    this.joinType = joinType;
+    this.tableName = tableName;
+    this.predicate = predicate;
   }
 }

@@ -1,4 +1,5 @@
-import { SelectField, SelectFunction, SQLParser } from './parser';
+import { Predicate } from '../predicate/predicate';
+import { JoinTable, SelectField, SelectFunction, SQLParser } from './parser';
 import {
   AndToken,
   EqualToken,
@@ -16,7 +17,43 @@ test('SELECT * FROM abc;', () => {
   expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
   expect(actual.fields.length).toBe(1);
   expect(actual.tables[0]).toContain('abc');
+  expect(actual.tables).toHaveLength(1);
   expect(actual.where.tokens).toHaveLength(0);
+});
+
+test('SELECT * FROM abc,def;', () => {
+  const parser = new SQLParser('SELECT * FROM abc,def;');
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
+  expect(actual.tables[0]).toStrictEqual('abc');
+  expect(actual.tables[1]).toStrictEqual(new JoinTable('project', 'def', undefined));
+  expect(actual.tables).toHaveLength(2);
+  expect(actual.where.tokens).toHaveLength(0);
+});
+
+test('SELECT * FROM abc JOIN def ON a=b;', () => {
+  const parser = new SQLParser('SELECT * FROM abc JOIN def ON a=b;');
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
+  expect(actual.tables[0]).toStrictEqual('abc');
+  expect(actual.tables[1]).toStrictEqual(new JoinTable('inner', 'def', new Predicate([new IdentifierToken('a'), new IdentifierToken('b'), EqualToken.TOKEN])));
+  expect(actual.tables).toHaveLength(2);
+  expect(actual.where.tokens).toHaveLength(0);
+});
+
+test('SELECT * FROM abc JOIN def ON a=b ORDER BY a;', () => {
+  const parser = new SQLParser('SELECT * FROM abc JOIN def ON a=b ORDER BY a;');
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
+  expect(actual.tables[0]).toStrictEqual('abc');
+  expect(actual.tables[1]).toStrictEqual(new JoinTable('inner', 'def', new Predicate([new IdentifierToken('a'), new IdentifierToken('b'), EqualToken.TOKEN])));
+  expect(actual.tables).toHaveLength(2);
+  expect(actual.where.tokens).toHaveLength(0);
+  expect(actual.sortKey[0]).toContain('a');
+  expect(actual.sortKey.length).toBe(1);
 });
 
 test('SELECT count(*) FROM abc;', () => {
@@ -29,13 +66,16 @@ test('SELECT count(*) FROM abc;', () => {
 });
 
 test('SELECT a, count(*) FROM abc ORDER BY a,b;', () => {
-  const parser = new SQLParser('SELECT a, count(*) FROM abc;');
+  const parser = new SQLParser('SELECT a, count(*) FROM abc ORDER BY a,b;;');
   const actual = parser.parse();
   expect(actual.fields[0]).toStrictEqual(new SelectField('a'));
   expect(actual.fields[1]).toStrictEqual(new SelectFunction('count', '*'));
   expect(actual.fields.length).toBe(2);
   expect(actual.tables[0]).toContain('abc');
   expect(actual.where.tokens).toHaveLength(0);
+  expect(actual.sortKey[0]).toContain('a');
+  expect(actual.sortKey[1]).toContain('b');
+  expect(actual.sortKey.length).toBe(2);
 });
 
 test('SELECT a, count(*) FROM abc WHERE c=1 ORDER BY a,b;', () => {
@@ -51,6 +91,9 @@ test('SELECT a, count(*) FROM abc WHERE c=1 ORDER BY a,b;', () => {
   expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));
   expect(actual.where.tokens[2]).toStrictEqual(EqualToken.TOKEN);
   expect(actual.where.tokens).toHaveLength(3);
+  expect(actual.sortKey[0]).toContain('a');
+  expect(actual.sortKey[1]).toContain('b');
+  expect(actual.sortKey.length).toBe(2);
 });
 
 test('SELECT * FROM abc ORDER BY a,b,c;', () => {
