@@ -60,7 +60,14 @@ export class GroupScan implements Scan {
       const type = f.functionType;
       const count = this.currentAggregation.reduce((previous, current) => {
         // TODO count
-        return ++previous;
+        switch (type) {
+          case 'count':
+            return ++previous;
+          case 'sum':
+            return previous + parseFloat(current.get(arg));
+          default:
+            throw Error(`function ${type} is not supported.`);
+        }
       }, 0);
       aggregated[`${type}(${arg})`] = `${count}`;
     });

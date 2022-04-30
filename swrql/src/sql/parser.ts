@@ -218,7 +218,7 @@ export class SelectField implements SelectTarget {
   }
 }
 
-type selectFunctionType = 'count';
+type selectFunctionType = 'count' | 'sum';
 export class SelectFunction implements SelectTarget {
   readonly functionType: selectFunctionType;
   readonly arg: string;
