@@ -4,7 +4,7 @@ import { ProjectScan } from './scan/projectscan';
 import { Scan } from './scan/scan';
 import { Record } from './scan/record';
 import { SelectScan } from './scan/selectscan';
-import { SelectField, SelectFunction, SQLParser } from './sql/parser';
+import { SelectFunction, SQLParser } from './sql/parser';
 import { SortScan } from './scan/sortscan';
 import { GroupScan } from './scan/groupscan';
 

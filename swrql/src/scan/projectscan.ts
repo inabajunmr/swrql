@@ -1,6 +1,6 @@
 import { Scan } from './scan';
 import { Record } from './record';
-import { SelectField, SelectTarget } from '../sql/parser';
+import { SelectTarget } from '../sql/parser';
 
 /**
  * filter only specified fields.

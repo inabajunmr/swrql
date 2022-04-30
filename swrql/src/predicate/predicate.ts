@@ -35,13 +35,13 @@ export class Predicate {
       this.consumeComparativeOperator(current as Token, stack);
       if (current instanceof IdentifierToken) {
         stack.push(record.get(current.literal));
-      } else if (current instanceof StringToken) {
-        stack.push(current.literal);
-      } else if (current instanceof NumberToken) {
-        stack.push(current.literal);
+      } else if (
+        current instanceof StringToken ||
+        current instanceof NumberToken
+      ) {
+        stack.push(current);
       }
     }
-
     return stack.pop();
   }
 
@@ -56,8 +56,14 @@ export class Predicate {
       operator === AndToken.TOKEN ||
       operator === OrToken.TOKEN
     ) {
-      const r = stack.pop();
-      const l = stack.pop();
+      const rToken = stack.pop();
+      const lToken = stack.pop();
+      let isNumber = false;
+      if (rToken instanceof NumberToken || lToken instanceof NumberToken) {
+        isNumber = true;
+      }
+      const r = this.translate(rToken, isNumber);
+      const l = this.translate(lToken, isNumber);
       switch (operator) {
         case EqualToken.TOKEN:
           stack.push(l === r);
@@ -85,5 +91,18 @@ export class Predicate {
           break;
       }
     }
+  }
+
+  private translate(pop: any, isNumber: boolean): any {
+    if (pop instanceof StringToken) {
+      return pop.literal;
+    } else if (pop instanceof NumberToken) {
+      return parseFloat(pop.literal);
+    }
+
+    if (isNumber) {
+      return parseFloat(pop);
+    }
+    return pop;
   }
 }

@@ -7,6 +7,20 @@ test('a=1', () => {
   expect(sut.test(new Record({ a: '2' }))).toBe(false);
 });
 
+test('a>10', () => {
+  const sut = new SQLParser('SELECT * FROM abc WHERE a > 10;').parse().where;
+  expect(sut.test(new Record({ a: '9' }))).toBe(false);
+  expect(sut.test(new Record({ a: '10' }))).toBe(false);
+  expect(sut.test(new Record({ a: '11' }))).toBe(true);
+});
+
+test(`a>'10'`, () => {
+  const sut = new SQLParser(`SELECT * FROM abc WHERE a > '10';`).parse().where;
+  expect(sut.test(new Record({ a: '9' }))).toBe(true);
+  expect(sut.test(new Record({ a: '10' }))).toBe(false);
+  expect(sut.test(new Record({ a: '11' }))).toBe(true);
+});
+
 test(`a='abc'`, () => {
   const sut = new SQLParser(`SELECT * FROM abc WHERE a='abc';`).parse().where;
   expect(sut.test(new Record({ a: 'abc' }))).toBe(true);

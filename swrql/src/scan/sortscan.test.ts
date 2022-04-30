@@ -1,4 +1,3 @@
-import { SQLParser } from '../sql/parser';
 import { CSVScan } from './csv/csvscan';
 import { Record } from './record';
 import { SortScan } from './sortscan';

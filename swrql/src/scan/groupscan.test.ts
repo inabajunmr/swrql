@@ -1,4 +1,4 @@
-import { SelectFunction, SQLParser } from '../sql/parser';
+import { SelectFunction } from '../sql/parser';
 import { CSVScan } from './csv/csvscan';
 import { GroupScan } from './groupscan';
 import { Record } from './record';

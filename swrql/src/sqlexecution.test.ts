@@ -162,7 +162,6 @@ test('select a,count(*) from abc group by a;', () => {
     'select a,count(*) from abc group by a;'
   );
   const actual = sqlExecution.execute();
-  console.log(actual.records[0]);
   assertRecord(actual.records[0], { a: '1', 'count(*)': '3' });
   assertRecord(actual.records[1], { a: '2', 'count(*)': '2' });
   assertRecord(actual.records[2], { a: '3', 'count(*)': '1' });
