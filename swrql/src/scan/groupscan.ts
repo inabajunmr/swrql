@@ -58,18 +58,23 @@ export class GroupScan implements Scan {
     this.functions.map((f) => {
       const arg = f.arg;
       const type = f.functionType;
-      const count = this.currentAggregation.reduce((previous, current) => {
+      let compute = this.currentAggregation.reduce((previous, current) => {
         // TODO count
         switch (type) {
           case 'count':
             return ++previous;
           case 'sum':
             return previous + parseFloat(current.get(arg));
+          case 'avg':
+            return previous + parseFloat(current.get(arg));
           default:
             throw Error(`function ${type} is not supported.`);
         }
       }, 0);
-      aggregated[`${type}(${arg})`] = `${count}`;
+      if (type === 'avg') {
+        compute = compute / this.currentAggregation.length;
+      }
+      aggregated[`${type}(${arg})`] = `${compute}`;
     });
     const a = record.merge(new Record(aggregated));
     return a;
