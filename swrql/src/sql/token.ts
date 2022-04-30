@@ -154,6 +154,19 @@ export class OrderByToken extends Token {
 }
 
 /**
+ * GROUP BY
+ */
+export class GroupByToken extends Token {
+  static readonly TOKEN = new GroupByToken();
+  toString(): string {
+    return `GROUP BY`;
+  }
+  isClauseDelimiter(): boolean {
+    return true;
+  }
+}
+
+/**
  * ,
  */
 export class CommaToken extends Token {

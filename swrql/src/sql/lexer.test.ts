@@ -9,6 +9,7 @@ import {
   FromToken,
   GreaterThanOrEqualToken,
   GreaterThanToken,
+  GroupByToken,
   IdentifierToken,
   LessThanOrEqualToken,
   LessThanToken,
@@ -183,6 +184,40 @@ test('SELECT * FROM abc ORDER BY a;', () => {
   expect(actual[4]).toStrictEqual(OrderByToken.TOKEN);
   expect(actual[5]).toStrictEqual(new IdentifierToken('a'));
   expect(actual[6]).toStrictEqual(EOFToken.TOKEN);
+});
+
+test('SELECT * FROM abc GROUP BY a,b;', () => {
+  const lexer = new SQLLexer('SELECT * FROM abc GROUP BY a,b;');
+  const actual = lexer.tokens();
+  expect(actual.length).toBe(9);
+  expect(actual[0]).toStrictEqual(SelectToken.TOKEN);
+  expect(actual[1]).toStrictEqual(AsteriskToken.TOKEN);
+  expect(actual[2]).toStrictEqual(FromToken.TOKEN);
+  expect(actual[3]).toStrictEqual(new IdentifierToken('abc'));
+  expect(actual[4]).toStrictEqual(GroupByToken.TOKEN);
+  expect(actual[5]).toStrictEqual(new IdentifierToken('a'));
+  expect(actual[6]).toStrictEqual(CommaToken.TOKEN);
+  expect(actual[7]).toStrictEqual(new IdentifierToken('b'));
+  expect(actual[8]).toStrictEqual(EOFToken.TOKEN);
+});
+
+test('SELECT * FROM abc GROUP BY a,b ORDER BY a,bb;', () => {
+  const lexer = new SQLLexer('SELECT * FROM abc GROUP BY a,b ORDER BY x,y;');
+  const actual = lexer.tokens();
+  expect(actual.length).toBe(13);
+  expect(actual[0]).toStrictEqual(SelectToken.TOKEN);
+  expect(actual[1]).toStrictEqual(AsteriskToken.TOKEN);
+  expect(actual[2]).toStrictEqual(FromToken.TOKEN);
+  expect(actual[3]).toStrictEqual(new IdentifierToken('abc'));
+  expect(actual[4]).toStrictEqual(GroupByToken.TOKEN);
+  expect(actual[5]).toStrictEqual(new IdentifierToken('a'));
+  expect(actual[6]).toStrictEqual(CommaToken.TOKEN);
+  expect(actual[7]).toStrictEqual(new IdentifierToken('b'));
+  expect(actual[8]).toStrictEqual(OrderByToken.TOKEN);
+  expect(actual[9]).toStrictEqual(new IdentifierToken('x'));
+  expect(actual[10]).toStrictEqual(CommaToken.TOKEN);
+  expect(actual[11]).toStrictEqual(new IdentifierToken('y'));
+  expect(actual[12]).toStrictEqual(EOFToken.TOKEN);
 });
 
 test("SELECT * FROM abc WHERE a='a;", () => {

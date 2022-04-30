@@ -1,4 +1,4 @@
-import { SQLParser } from './parser';
+import { SelectField, SelectFunction, SQLParser } from './parser';
 import {
   AndToken,
   EqualToken,
@@ -13,15 +13,50 @@ import {
 test('SELECT * FROM abc;', () => {
   const parser = new SQLParser('SELECT * FROM abc;');
   const actual = parser.parse();
-  expect(actual.fields).toContain('*');
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
   expect(actual.tables[0]).toContain('abc');
   expect(actual.where.tokens).toHaveLength(0);
+});
+
+test('SELECT count(*) FROM abc;', () => {
+  const parser = new SQLParser('SELECT count(*) FROM abc;');
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectFunction('count', '*'));
+  expect(actual.fields.length).toBe(1);
+  expect(actual.tables[0]).toContain('abc');
+  expect(actual.where.tokens).toHaveLength(0);
+});
+
+test('SELECT a, count(*) FROM abc ORDER BY a,b;', () => {
+  const parser = new SQLParser('SELECT a, count(*) FROM abc;');
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('a'));
+  expect(actual.fields[1]).toStrictEqual(new SelectFunction('count', '*'));
+  expect(actual.fields.length).toBe(2);
+  expect(actual.tables[0]).toContain('abc');
+  expect(actual.where.tokens).toHaveLength(0);
+});
+
+
+test('SELECT a, count(*) FROM abc WHERE c=1 ORDER BY a,b;', () => {
+  const parser = new SQLParser('SELECT a, count(*) FROM abc WHERE c=1 ORDER BY a,b;');
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('a'));
+  expect(actual.fields[1]).toStrictEqual(new SelectFunction('count', '*'));
+  expect(actual.fields.length).toBe(2);
+  expect(actual.tables[0]).toContain('abc');
+  expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('c'));
+  expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));
+  expect(actual.where.tokens[2]).toStrictEqual(EqualToken.TOKEN);
+  expect(actual.where.tokens).toHaveLength(3);
 });
 
 test('SELECT * FROM abc ORDER BY a,b,c;', () => {
   const parser = new SQLParser('SELECT * FROM abc ORDER BY a,b,c;');
   const actual = parser.parse();
-  expect(actual.fields).toContain('*');
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
   expect(actual.tables[0]).toContain('abc');
   expect(actual.where.tokens).toHaveLength(0);
   expect(actual.sortKey[0]).toContain('a');
@@ -31,10 +66,43 @@ test('SELECT * FROM abc ORDER BY a,b,c;', () => {
   expect(actual.isAsc).toBe(true);
 });
 
+test('SELECT * FROM abc GROUP BY a,b,c;', () => {
+  const parser = new SQLParser('SELECT * FROM abc GROUP BY a,b,c;');
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
+  expect(actual.tables[0]).toContain('abc');
+  expect(actual.where.tokens).toHaveLength(0);
+  expect(actual.groupByKeys[0]).toContain('a');
+  expect(actual.groupByKeys[1]).toContain('b');
+  expect(actual.groupByKeys[2]).toContain('c');
+  expect(actual.groupByKeys.length).toBe(3);
+  expect(actual.sortKey.length).toBe(0);
+  expect(actual.isAsc).toBe(true);
+});
+
+test('SELECT * FROM abc GROUP BY a,b,c ORDER BY x,y;', () => {
+  const parser = new SQLParser('SELECT * FROM abc GROUP BY a,b,c ORDER BY x,y;');
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
+  expect(actual.tables[0]).toContain('abc');
+  expect(actual.where.tokens).toHaveLength(0);
+  expect(actual.groupByKeys[0]).toContain('a');
+  expect(actual.groupByKeys[1]).toContain('b');
+  expect(actual.groupByKeys[2]).toContain('c');
+  expect(actual.groupByKeys.length).toBe(3);
+  expect(actual.sortKey[0]).toContain('x');
+  expect(actual.sortKey[1]).toContain('y');
+  expect(actual.sortKey.length).toBe(2);
+  expect(actual.isAsc).toBe(true);
+});
+
 test('SELECT * FROM abc ORDER BY a,b,c DESC;', () => {
   const parser = new SQLParser('SELECT * FROM abc ORDER BY a,b,c DESC;');
   const actual = parser.parse();
-  expect(actual.fields).toContain('*');
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
   expect(actual.tables[0]).toContain('abc');
   expect(actual.where.tokens).toHaveLength(0);
   expect(actual.sortKey[0]).toContain('a');
@@ -47,7 +115,8 @@ test('SELECT * FROM abc ORDER BY a,b,c DESC;', () => {
 test('SELECT * FROM abc WHERE a=1;', () => {
   const parser = new SQLParser('SELECT * FROM abc WHERE a=1;');
   const actual = parser.parse();
-  expect(actual.fields).toContain('*');
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
   expect(actual.tables[0]).toContain('abc');
   expect(actual.where.tokens).toHaveLength(3);
   expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
@@ -60,7 +129,8 @@ test('SELECT * FROM abc WHERE a=1 ORDER BY a,b,c DESC;', () => {
     'SELECT * FROM abc WHERE a=1 ORDER BY a,b,c DESC;'
   );
   const actual = parser.parse();
-  expect(actual.fields).toContain('*');
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
   expect(actual.tables[0]).toContain('abc');
   expect(actual.where.tokens).toHaveLength(3);
   expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
@@ -76,7 +146,8 @@ test('SELECT * FROM abc WHERE a=1 ORDER BY a,b,c DESC;', () => {
 test('SELECT * FROM abc WHERE a > 1;', () => {
   const parser = new SQLParser('SELECT * FROM abc WHERE a > 1;');
   const actual = parser.parse();
-  expect(actual.fields).toContain('*');
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
   expect(actual.tables[0]).toContain('abc');
   expect(actual.where.tokens).toHaveLength(3);
   expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
@@ -87,7 +158,8 @@ test('SELECT * FROM abc WHERE a > 1;', () => {
 test('SELECT * FROM abc WHERE a >= 1;', () => {
   const parser = new SQLParser('SELECT * FROM abc WHERE a >= 1;');
   const actual = parser.parse();
-  expect(actual.fields).toContain('*');
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
   expect(actual.tables[0]).toContain('abc');
   expect(actual.where.tokens).toHaveLength(3);
   expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
@@ -99,9 +171,9 @@ test(`SELECT a,b,c FROM abc WHERE a=1 AND b='abc';`, () => {
   const parser = new SQLParser(`SELECT a,b,c FROM abc WHERE a=1 AND b='abc';`);
   const actual = parser.parse();
   expect(actual.fields).toHaveLength(3);
-  expect(actual.fields).toContain('a');
-  expect(actual.fields).toContain('b');
-  expect(actual.fields).toContain('c');
+  expect(actual.fields[0]).toStrictEqual(new SelectField('a'));
+  expect(actual.fields[1]).toStrictEqual(new SelectField('b'));
+  expect(actual.fields[2]).toStrictEqual(new SelectField('c'));
   expect(actual.tables[0]).toContain('abc');
 
   // a 1 = b 'abc' = AND
@@ -121,9 +193,9 @@ test(`SELECT a,b,c FROM abc WHERE a=1 AND (b='abc' OR c=2);`, () => {
   );
   const actual = parser.parse();
   expect(actual.fields).toHaveLength(3);
-  expect(actual.fields).toContain('a');
-  expect(actual.fields).toContain('b');
-  expect(actual.fields).toContain('c');
+  expect(actual.fields[0]).toStrictEqual(new SelectField('a'));
+  expect(actual.fields[1]).toStrictEqual(new SelectField('b'));
+  expect(actual.fields[2]).toStrictEqual(new SelectField('c'));
   expect(actual.tables[0]).toContain('abc');
 
   // a 1 = b abc = c 2 = OR AND

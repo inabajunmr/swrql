@@ -6,6 +6,7 @@ import {
   CommaToken,
   EOFToken,
   FromToken,
+  GroupByToken,
   IdentifierToken,
   LParenToken,
   OrderByToken,
@@ -28,7 +29,7 @@ export class SQLParser {
     }
 
     // FIELDS
-    const fields: string[] = [];
+    const fields: SelectTarget[] = [];
     {
       let current = this.tokens.shift();
       while (!(current instanceof FromToken)) {
@@ -37,9 +38,27 @@ export class SQLParser {
         }
 
         if (current instanceof IdentifierToken) {
-          fields.push(current.literal);
+          fields.push(new SelectField(current.literal));
+        } else if (current instanceof LParenToken) {
+          const functionType = fields.pop()
+          if (!(functionType instanceof SelectField)) {
+            throw Error(`Unexpected error. ${functionType}`);
+          }
+          const argToken = this.tokens.shift();
+          let arg: string;
+          if (argToken instanceof IdentifierToken) {
+            arg = argToken.literal
+          } else if (argToken instanceof AsteriskToken) {
+            arg = '*'
+          } else {
+            throw Error(`Argument of ${functionType} is something wrong.`);
+          }
+          if (this.tokens.shift() !== RParenToken.TOKEN) {
+            throw Error('function in SELECT-CLAUSE is something wrong.')
+          }
+          fields.push(new SelectFunction(functionType.fieldName as selectFunctionType, arg));
         } else if (current instanceof AsteriskToken) {
-          fields.push('*');
+          fields.push(new SelectField('*'));
           this.tokens.shift();
           break;
         } else if (!(current instanceof CommaToken)) {
@@ -71,11 +90,25 @@ export class SQLParser {
       current = this.tokens.shift();
     }
 
+    // GROUP BY
+    const groupByKeys = [];
+    if (current === GroupByToken.TOKEN) {
+      current = this.tokens.shift();
+      while (!current?.isClauseDelimiter()) {
+        if (current instanceof IdentifierToken) {
+          groupByKeys.push(current.literal);
+        } else if (current !== CommaToken.TOKEN) {
+          throw new Error('Field list at GROUP BY clause is something wrong.');
+        }
+        current = this.tokens.shift();
+      }
+    }
+
     // ORDER BY
     const sortKeys = [];
     let isASC = true;
     if (current !== OrderByToken.TOKEN) {
-      return new SelectData(fields, tables, predicate, [], true);
+      return new SelectData(fields, tables, predicate, groupByKeys, [], true);
     }
     current = this.tokens.shift();
     while (!current?.isClauseDelimiter()) {
@@ -99,7 +132,7 @@ export class SQLParser {
     ) {
       isASC = false;
     }
-    return new SelectData(fields, tables, predicate, sortKeys, isASC);
+    return new SelectData(fields, tables, predicate, groupByKeys, sortKeys, isASC);
   }
 
   private parsePredicate(): Predicate {
@@ -135,23 +168,47 @@ export class SQLParser {
 }
 
 export class SelectData {
-  readonly fields: string[];
+  readonly fields: SelectTarget[];
   readonly tables: string[];
   readonly where: Predicate;
+  readonly groupByKeys: string[];
   readonly sortKey: string[];
   readonly isAsc: boolean;
 
   constructor(
-    fields: string[],
+    fields: SelectTarget[],
     tables: string[],
     where: Predicate,
+    groupByKeys: string[],
     sortKey: string[],
     isAsc: boolean
   ) {
     this.fields = fields;
     this.tables = tables;
     this.where = where;
+    this.groupByKeys = groupByKeys;
     this.sortKey = sortKey;
     this.isAsc = isAsc;
   }
+}
+
+export interface SelectTarget { }
+
+export class SelectField implements SelectTarget {
+  readonly fieldName: string;
+  constructor(fieldName: string) {
+    this.fieldName = fieldName;
+  }
+}
+
+type selectFunctionType = 'count';
+export class SelectFunction implements SelectTarget {
+  readonly functionType: selectFunctionType;
+  readonly arg: string;
+
+  constructor(functionType: selectFunctionType, arg: string) {
+    this.functionType = functionType;
+    this.arg = arg;
+  }
+
 }

@@ -1,5 +1,6 @@
 import { Scan } from './scan';
 import { Record } from './record';
+import { SelectField, SelectTarget } from '../sql/parser';
 
 /**
  * filter only specified fields.
@@ -7,9 +8,9 @@ import { Record } from './record';
 export class ProjectScan implements Scan {
   private readonly scan: Scan;
   private readonly specifiedFields: string[];
-  constructor(scan: Scan, fields: string[]) {
+  constructor(scan: Scan, targets: SelectTarget[]) {
     this.scan = scan;
-    this.specifiedFields = fields;
+    this.specifiedFields = targets.filter((t) => t instanceof SelectField).map(t => (t as SelectField).fieldName);
   }
   fields(): string[] {
     if (this.specifiedFields[0] === '*') {

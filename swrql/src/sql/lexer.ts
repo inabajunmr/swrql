@@ -16,6 +16,7 @@ import {
   OrderByToken,
   AndToken,
   NumberToken,
+  GroupByToken,
 } from './token';
 
 export class SQLLexer {
@@ -36,9 +37,13 @@ export class SQLLexer {
         t instanceof IdentifierToken &&
         t.literal.toUpperCase() == 'BY' &&
         before instanceof IdentifierToken &&
-        before.literal.toUpperCase() == 'ORDER'
+        (before.literal.toUpperCase() == 'ORDER' || before.literal.toUpperCase() == 'GROUP')
       ) {
-        r[r.length - 1] = OrderByToken.TOKEN;
+        if (before.literal.toUpperCase() == 'ORDER') {
+          r[r.length - 1] = OrderByToken.TOKEN;
+        } else {
+          r[r.length - 1] = GroupByToken.TOKEN;
+        }
       } else {
         r.push(t);
       }
@@ -144,11 +149,10 @@ export class SQLLexer {
 
   private readIdentifier(): string {
     let result = '';
-    while (this.now().match(/[A-Za-z0-9_]/) && !this.isEOF()) {
+    while (this.now().match(/[A-Za-z0-9_]+/) && !this.isEOF()) {
       result += this.now();
       this.nextChar();
     }
-
     return result;
   }
 

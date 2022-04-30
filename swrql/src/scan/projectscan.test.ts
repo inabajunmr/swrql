@@ -1,3 +1,4 @@
+import { SelectField } from '../sql/parser';
 import { CSVScan } from './csv/csvscan';
 import { ProjectScan } from './projectscan';
 test('procject', () => {
@@ -8,7 +9,7 @@ test('procject', () => {
         a,b,c
         x,y,z`
   );
-  const scan = new ProjectScan(table, ['t1a', 't1b']);
+  const scan = new ProjectScan(table, [new SelectField('t1a'), new SelectField('t1b')]);
   expect(scan.next()).toBe(true);
   expect(scan.getRecord().size()).toBe(2);
   expect(scan.getRecord().get('t1a')).toBe('1');
