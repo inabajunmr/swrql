@@ -4,8 +4,9 @@ import { ProjectScan } from './scan/projectscan';
 import { Scan } from './scan/scan';
 import { Record } from './scan/record';
 import { SelectScan } from './scan/selectscan';
-import { SQLParser } from './sql/parser';
+import { SelectField, SelectFunction, SQLParser } from './sql/parser';
 import { SortScan } from './scan/sortscan';
+import { GroupScan } from './scan/groupscan';
 
 export class SQLExecution {
   private readonly tables: CSVScan[];
@@ -30,21 +31,31 @@ export class SQLExecution {
     });
 
     // Product
-    let projected = targetTables.shift() as Scan;
+    let scan = targetTables.shift() as Scan;
     while (targetTables.length != 0) {
-      projected = new ProductScan(projected, targetTables.shift() as Scan);
+      scan = new ProductScan(scan, targetTables.shift() as Scan);
     }
 
     // Select
-    const selectScan = new SelectScan(projected, select.where);
+    scan = new SelectScan(scan, select.where);
 
-    // // Project
-    const projectScan = new ProjectScan(selectScan, select.fields);
+    // Aggregation
+    if (select.groupByKeys.length !== 0) {
+      scan = new GroupScan(
+        scan,
+        select.groupByKeys,
+        select.fields.filter((f) => {
+          return f instanceof SelectFunction;
+        }) as SelectFunction[]
+      );
+    }
+
+    // Project
+    scan = new ProjectScan(scan, select.fields);
 
     // Sort
-    let scan: Scan = projectScan;
     if (select.sortKey.length !== 0) {
-      scan = new SortScan(projectScan, select.sortKey, select.isAsc);
+      scan = new SortScan(scan, select.sortKey, select.isAsc);
     }
 
     // build result

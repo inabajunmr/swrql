@@ -146,6 +146,32 @@ foo,bar,baz`
   expect(actual.records.length).toBe(2);
 });
 
+test('select a,count(*) from abc group by a;', () => {
+  const table1 = new CSVScan(
+    'abc',
+    `a,b,c
+    1,2,3
+    1,3,4
+    1,4,5
+    2,1,2
+    2,2,3
+    3,1,2`
+  );
+  const sqlExecution = new SQLExecution(
+    [table1],
+    'select a,count(*) from abc group by a;'
+  );
+  const actual = sqlExecution.execute();
+  console.log(actual.records[0]);
+  assertRecord(actual.records[0], { a: '1', 'count(*)': '3' });
+  assertRecord(actual.records[1], { a: '2', 'count(*)': '2' });
+  assertRecord(actual.records[2], { a: '3', 'count(*)': '1' });
+  expect(actual.records.length).toBe(3);
+  expect(actual.fields.length).toBe(2);
+  expect(actual.fields).toContain('a');
+  expect(actual.fields).toContain('count(*)');
+});
+
 test(`FROM clause has unknown table name`, () => {
   const table1 = new CSVScan(
     'abc',

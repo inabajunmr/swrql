@@ -10,9 +10,7 @@ export class ProjectScan implements Scan {
   private readonly specifiedFields: string[];
   constructor(scan: Scan, targets: SelectTarget[]) {
     this.scan = scan;
-    this.specifiedFields = targets
-      .filter((t) => t instanceof SelectField)
-      .map((t) => t.toFieldName());
+    this.specifiedFields = targets.map((t) => t.toFieldName());
   }
   fields(): string[] {
     if (this.specifiedFields[0] === '*') {
