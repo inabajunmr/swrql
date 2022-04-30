@@ -83,7 +83,6 @@ export class SQLParser {
         if (current instanceof IdentifierToken) {
           tables.push((current as IdentifierToken).literal);
         } else if (current instanceof JoinToken) {
-          // TODO test
           const joinTable = this.tokens.shift();
           const on = this.tokens.shift();
           if (!(on instanceof OnToken)) {
@@ -96,7 +95,6 @@ export class SQLParser {
             throw new Error(`JOIN needs target table.`);
           }
         } else if (current instanceof CommaToken) {
-          // TODO test
           const joinTable = this.tokens.shift();
           if (joinTable instanceof IdentifierToken) {
             tables.push(new JoinTable('product', joinTable.literal, undefined));

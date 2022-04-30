@@ -16,7 +16,6 @@ export class ProjectScan implements Scan {
     if (this.specifiedFields[0] === '*') {
       return this.scan.fields();
     }
-
     return this.specifiedFields;
   }
 

@@ -7,6 +7,7 @@ import { SelectScan } from './scan/selectscan';
 import { JoinTable, SelectFunction, SQLParser } from './sql/parser';
 import { SortScan } from './scan/sortscan';
 import { GroupScan } from './scan/groupscan';
+import { Predicate } from './predicate/predicate';
 
 export class SQLExecution {
   private readonly tables: CSVScan[];
@@ -39,7 +40,15 @@ export class SQLExecution {
         }
         scan = new ProductScan(scan, target as Scan);
       } else if (t.joinType === 'inner') {
-        // TODO
+        const target = this.tables.find((tt) => tt.tableName === t.tableName);
+        if (target === undefined) {
+          throw new Error(`${t.tableName} is not found.`);
+        }
+        scan = new SelectScan(
+          new ProductScan(scan, target as Scan),
+          t.predicate as Predicate
+        );
+        // new InnerJoin(scan, target as Scan, t.predicate);
       } else {
         throw Error(`JoinType:${t.joinType} is not supported.`);
       }
