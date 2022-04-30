@@ -80,7 +80,11 @@ export class SQLParser {
     let current = this.tokens.shift();
     {
       while (!current?.isClauseDelimiter()) {
-        if (current instanceof IdentifierToken) {
+        // 'INNER JOIN' and just 'JOIN' are same so skip 'INNER'
+        if (
+          current instanceof IdentifierToken &&
+          current.literal.toUpperCase() !== 'INNER'
+        ) {
           tables.push((current as IdentifierToken).literal);
         } else if (current instanceof JoinToken) {
           const joinTable = this.tokens.shift();
@@ -99,6 +103,11 @@ export class SQLParser {
           if (joinTable instanceof IdentifierToken) {
             tables.push(new JoinTable('product', joinTable.literal, undefined));
           }
+        } else if (
+          current instanceof IdentifierToken &&
+          current.literal.toUpperCase() === 'INNER'
+        ) {
+          // NOP
         } else {
           throw new Error('Field list at FROM clause is something wrong.');
         }
