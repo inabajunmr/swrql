@@ -27,7 +27,9 @@ test('SELECT * FROM abc,def;', () => {
   expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
   expect(actual.fields.length).toBe(1);
   expect(actual.tables[0]).toStrictEqual('abc');
-  expect(actual.tables[1]).toStrictEqual(new JoinTable('project', 'def', undefined));
+  expect(actual.tables[1]).toStrictEqual(
+    new JoinTable('product', 'def', undefined)
+  );
   expect(actual.tables).toHaveLength(2);
   expect(actual.where.tokens).toHaveLength(0);
 });
@@ -38,7 +40,17 @@ test('SELECT * FROM abc JOIN def ON a=b;', () => {
   expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
   expect(actual.fields.length).toBe(1);
   expect(actual.tables[0]).toStrictEqual('abc');
-  expect(actual.tables[1]).toStrictEqual(new JoinTable('inner', 'def', new Predicate([new IdentifierToken('a'), new IdentifierToken('b'), EqualToken.TOKEN])));
+  expect(actual.tables[1]).toStrictEqual(
+    new JoinTable(
+      'inner',
+      'def',
+      new Predicate([
+        new IdentifierToken('a'),
+        new IdentifierToken('b'),
+        EqualToken.TOKEN,
+      ])
+    )
+  );
   expect(actual.tables).toHaveLength(2);
   expect(actual.where.tokens).toHaveLength(0);
 });
@@ -49,7 +61,17 @@ test('SELECT * FROM abc JOIN def ON a=b ORDER BY a;', () => {
   expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
   expect(actual.fields.length).toBe(1);
   expect(actual.tables[0]).toStrictEqual('abc');
-  expect(actual.tables[1]).toStrictEqual(new JoinTable('inner', 'def', new Predicate([new IdentifierToken('a'), new IdentifierToken('b'), EqualToken.TOKEN])));
+  expect(actual.tables[1]).toStrictEqual(
+    new JoinTable(
+      'inner',
+      'def',
+      new Predicate([
+        new IdentifierToken('a'),
+        new IdentifierToken('b'),
+        EqualToken.TOKEN,
+      ])
+    )
+  );
   expect(actual.tables).toHaveLength(2);
   expect(actual.where.tokens).toHaveLength(0);
   expect(actual.sortKey[0]).toContain('a');

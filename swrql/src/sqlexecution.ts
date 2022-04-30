@@ -4,7 +4,7 @@ import { ProjectScan } from './scan/projectscan';
 import { Scan } from './scan/scan';
 import { Record } from './scan/record';
 import { SelectScan } from './scan/selectscan';
-import { SelectFunction, SQLParser } from './sql/parser';
+import { JoinTable, SelectFunction, SQLParser } from './sql/parser';
 import { SortScan } from './scan/sortscan';
 import { GroupScan } from './scan/groupscan';
 
@@ -20,21 +20,30 @@ export class SQLExecution {
   execute(): SQLExecutionResult {
     const select = new SQLParser(this.sql).parse();
 
-    const targetTables = this.tables.filter((s) => {
-      return select.tables.includes(s.tableName);
-    });
-
-    select.tables.forEach((t) => {
-      if (!this.tables.map((v) => v.tableName).includes(t)) {
-        throw new Error(`${t} is not found.`);
-      }
-    });
+    const tableName = select.tables.shift();
+    const table = this.tables.find((t) => t.tableName === tableName);
+    if (table === undefined) {
+      throw new Error(`${tableName} is not found.`);
+    }
+    let scan = table as Scan;
 
     // Product
-    let scan = targetTables.shift() as Scan;
-    while (targetTables.length != 0) {
-      scan = new ProductScan(scan, targetTables.shift() as Scan);
-    }
+    select.tables.forEach((t) => {
+      if (!(t instanceof JoinTable)) {
+        throw Error('Unexpected error.');
+      }
+      if (t.joinType === 'product') {
+        const target = this.tables.find((tt) => tt.tableName === t.tableName);
+        if (target === undefined) {
+          throw new Error(`${t.tableName} is not found.`);
+        }
+        scan = new ProductScan(scan, target as Scan);
+      } else if (t.joinType === 'inner') {
+        // TODO
+      } else {
+        throw Error(`JoinType:${t.joinType} is not supported.`);
+      }
+    });
 
     // Select
     scan = new SelectScan(scan, select.where);
