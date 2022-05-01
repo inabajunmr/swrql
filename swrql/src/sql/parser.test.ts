@@ -28,7 +28,7 @@ test('SELECT * FROM abc,def;', () => {
   expect(actual.fields.length).toBe(1);
   expect(actual.tables[0]).toStrictEqual('abc');
   expect(actual.tables[1]).toStrictEqual(
-    new JoinTable('product', 'def', undefined)
+    new JoinTable('product', 'def', undefined, undefined)
   );
   expect(actual.tables).toHaveLength(2);
   expect(actual.where.tokens).toHaveLength(0);
@@ -44,6 +44,97 @@ test('SELECT * FROM abc JOIN def ON a=b;', () => {
     new JoinTable(
       'inner',
       'def',
+      undefined,
+      new Predicate([
+        new IdentifierToken('a'),
+        new IdentifierToken('b'),
+        EqualToken.TOKEN,
+      ])
+    )
+  );
+  expect(actual.tables).toHaveLength(2);
+  expect(actual.where.tokens).toHaveLength(0);
+});
+
+test('SELECT * FROM abc LEFT JOIN def ON a=b;', () => {
+  const parser = new SQLParser('SELECT * FROM abc LEFT JOIN def ON a=b;');
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
+  expect(actual.tables[0]).toStrictEqual('abc');
+  expect(actual.tables[1]).toStrictEqual(
+    new JoinTable(
+      'outer',
+      'def',
+      'left',
+      new Predicate([
+        new IdentifierToken('a'),
+        new IdentifierToken('b'),
+        EqualToken.TOKEN,
+      ])
+    )
+  );
+  expect(actual.tables).toHaveLength(2);
+  expect(actual.where.tokens).toHaveLength(0);
+});
+
+test('SELECT * FROM abc LEFT OUTER JOIN def ON a=b;', () => {
+  const parser = new SQLParser('SELECT * FROM abc LEFT OUTER JOIN def ON a=b;');
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
+  expect(actual.tables[0]).toStrictEqual('abc');
+  expect(actual.tables[1]).toStrictEqual(
+    new JoinTable(
+      'outer',
+      'def',
+      'left',
+      new Predicate([
+        new IdentifierToken('a'),
+        new IdentifierToken('b'),
+        EqualToken.TOKEN,
+      ])
+    )
+  );
+  expect(actual.tables).toHaveLength(2);
+  expect(actual.where.tokens).toHaveLength(0);
+});
+
+test('SELECT * FROM abc RIGHT JOIN def ON a=b;', () => {
+  const parser = new SQLParser('SELECT * FROM abc RIGHT JOIN def ON a=b;');
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
+  expect(actual.tables[0]).toStrictEqual('abc');
+  expect(actual.tables[1]).toStrictEqual(
+    new JoinTable(
+      'outer',
+      'def',
+      'right',
+      new Predicate([
+        new IdentifierToken('a'),
+        new IdentifierToken('b'),
+        EqualToken.TOKEN,
+      ])
+    )
+  );
+  expect(actual.tables).toHaveLength(2);
+  expect(actual.where.tokens).toHaveLength(0);
+});
+
+test('SELECT * FROM abc RIGHT OUTER JOIN def ON a=b;', () => {
+  const parser = new SQLParser(
+    'SELECT * FROM abc RIGHT OUTER JOIN def ON a=b;'
+  );
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
+  expect(actual.tables[0]).toStrictEqual('abc');
+  expect(actual.tables[1]).toStrictEqual(
+    new JoinTable(
+      'outer',
+      'def',
+      'right',
       new Predicate([
         new IdentifierToken('a'),
         new IdentifierToken('b'),
@@ -65,6 +156,7 @@ test('SELECT * FROM abc JOIN def ON a=b ORDER BY a;', () => {
     new JoinTable(
       'inner',
       'def',
+      undefined,
       new Predicate([
         new IdentifierToken('a'),
         new IdentifierToken('b'),

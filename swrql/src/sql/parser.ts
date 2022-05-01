@@ -83,6 +83,42 @@ export class SQLParser {
         // 'INNER JOIN' and just 'JOIN' are same so skip 'INNER'
         if (
           current instanceof IdentifierToken &&
+          (current.literal.toUpperCase() === 'LEFT' ||
+            current.literal.toUpperCase() === 'RIGHT')
+        ) {
+          const leftOrRight = current.literal.toUpperCase();
+          let outerOrJoin = this.tokens.shift();
+          if (
+            outerOrJoin instanceof IdentifierToken &&
+            outerOrJoin.literal.toUpperCase() === 'OUTER'
+          ) {
+            const join = this.tokens.shift();
+            if (join !== JoinToken.TOKEN) {
+              throw Error('JOIN is something wrong.');
+            }
+            outerOrJoin = join;
+          }
+          const joinTable = this.tokens.shift();
+          const on = this.tokens.shift();
+          if (!(on instanceof OnToken)) {
+            throw new Error(`No JOIN condition.`);
+          }
+          const pre = this.parsePredicate();
+          if (joinTable instanceof IdentifierToken) {
+            if (leftOrRight === 'LEFT') {
+              tables.push(
+                new JoinTable('outer', joinTable.literal, 'left', pre)
+              );
+            } else {
+              tables.push(
+                new JoinTable('outer', joinTable.literal, 'right', pre)
+              );
+            }
+          } else {
+            throw new Error(`JOIN needs target table.`);
+          }
+        } else if (
+          current instanceof IdentifierToken &&
           current.literal.toUpperCase() !== 'INNER'
         ) {
           tables.push((current as IdentifierToken).literal);
@@ -94,14 +130,18 @@ export class SQLParser {
           }
           const pre = this.parsePredicate();
           if (joinTable instanceof IdentifierToken) {
-            tables.push(new JoinTable('inner', joinTable.literal, pre));
+            tables.push(
+              new JoinTable('inner', joinTable.literal, undefined, pre)
+            );
           } else {
             throw new Error(`JOIN needs target table.`);
           }
         } else if (current instanceof CommaToken) {
           const joinTable = this.tokens.shift();
           if (joinTable instanceof IdentifierToken) {
-            tables.push(new JoinTable('product', joinTable.literal, undefined));
+            tables.push(
+              new JoinTable('product', joinTable.literal, undefined, undefined)
+            );
           }
         } else if (
           current instanceof IdentifierToken &&
@@ -260,19 +300,23 @@ export class SelectFunction implements SelectTarget {
   }
 }
 
-export type joinType = 'product' | 'inner';
+export type joinType = 'product' | 'inner' | 'outer';
+export type leftOrRight = 'left' | 'right';
 export class JoinTable {
   readonly joinType: joinType;
   readonly tableName: string;
   readonly predicate: Predicate | undefined;
+  readonly leftOrRight: leftOrRight | undefined;
 
   constructor(
     joinType: joinType,
     tableName: string,
+    leftOrRight: leftOrRight | undefined,
     predicate: Predicate | undefined
   ) {
     this.joinType = joinType;
     this.tableName = tableName;
+    this.leftOrRight = leftOrRight;
     this.predicate = predicate;
   }
 }

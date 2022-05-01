@@ -8,6 +8,7 @@ import { JoinTable, SelectFunction, SQLParser } from './sql/parser';
 import { SortScan } from './scan/sortscan';
 import { GroupScan } from './scan/groupscan';
 import { Predicate } from './predicate/predicate';
+import { OuterJoinScan } from './scan/outerjoinscan';
 
 export class SQLExecution {
   private readonly tables: CSVScan[];
@@ -28,7 +29,7 @@ export class SQLExecution {
     }
     let scan = table as Scan;
 
-    // Product
+    // Product/Join
     select.tables.forEach((t) => {
       if (!(t instanceof JoinTable)) {
         throw Error('Unexpected error.');
@@ -44,11 +45,29 @@ export class SQLExecution {
         if (target === undefined) {
           throw new Error(`${t.tableName} is not found.`);
         }
+        // inner join is same as product and select
         scan = new SelectScan(
           new ProductScan(scan, target as Scan),
           t.predicate as Predicate
         );
-        // new InnerJoin(scan, target as Scan, t.predicate);
+      } else if (t.joinType === 'outer') {
+        const target = this.tables.find((tt) => tt.tableName === t.tableName);
+        if (target === undefined) {
+          throw new Error(`${t.tableName} is not found.`);
+        }
+        if (t.leftOrRight === 'left') {
+          scan = new OuterJoinScan(
+            scan,
+            target as Scan,
+            t.predicate as Predicate
+          );
+        } else {
+          scan = new OuterJoinScan(
+            target as Scan,
+            scan,
+            t.predicate as Predicate
+          );
+        }
       } else {
         throw Error(`JoinType:${t.joinType} is not supported.`);
       }
