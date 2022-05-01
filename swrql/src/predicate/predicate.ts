@@ -3,6 +3,7 @@ import {
   AndToken,
   DiamondToken,
   EqualToken,
+  LikeToken,
   GreaterThanOrEqualToken,
   GreaterThanToken,
   IdentifierToken,
@@ -31,6 +32,7 @@ export class Predicate {
     const tempTokens = [...this.tokens];
     const stack: any[] = [];
     while (tempTokens.length > 0) {
+
       const current = tempTokens.shift();
       this.consumeComparativeOperator(current as Token, stack);
       if (current instanceof IdentifierToken) {
@@ -48,6 +50,7 @@ export class Predicate {
   private consumeComparativeOperator(operator: Token, stack: any[]) {
     if (
       operator === EqualToken.TOKEN ||
+      operator === LikeToken.TOKEN ||
       operator === GreaterThanToken.TOKEN ||
       operator === GreaterThanOrEqualToken.TOKEN ||
       operator === LessThanToken.TOKEN ||
@@ -64,9 +67,13 @@ export class Predicate {
       }
       const r = this.translate(rToken, isNumber);
       const l = this.translate(lToken, isNumber);
+
       switch (operator) {
         case EqualToken.TOKEN:
           stack.push(l === r);
+          break;
+        case LikeToken.TOKEN:
+          stack.push(new RegExp(r as string).test(l));
           break;
         case GreaterThanToken.TOKEN:
           stack.push(l > r);

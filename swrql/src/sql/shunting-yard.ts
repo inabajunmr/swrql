@@ -8,6 +8,7 @@ import {
   IdentifierToken,
   LessThanOrEqualToken,
   LessThanToken,
+  LikeToken,
   LParenToken,
   NumberToken,
   OrToken,
@@ -37,6 +38,8 @@ export function getInputPriority(t: Token): number {
     case LessThanOrEqualToken.TOKEN:
       return 21;
     case DiamondToken.TOKEN:
+      return 21;
+    case LikeToken.TOKEN:
       return 21;
     default:
       if (
@@ -70,6 +73,8 @@ export function getStackPriority(t: Token): number {
     case LessThanOrEqualToken.TOKEN:
       return 22;
     case DiamondToken.TOKEN:
+      return 22;
+    case LikeToken.TOKEN:
       return 22;
     case EOFToken.TOKEN:
       return 0;

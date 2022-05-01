@@ -26,7 +26,7 @@ https://inabajunmr.github.io/swrql/pages/public/
 | IN/NOT IN                              | Unsupported |
 | ANY/ALL                                | Unsupported |
 | Subquery                               | Unsupported |
-| LIKE                                   | Unsupported |
+| LIKE                                   | ✅ but can't use SQL wildcard. using only Regex. |
 | LIMIT/OFFSET                           | Unsupported |
 | UNION                                  | Unsupported |
 | EXCEPT                                 | Unsupported |

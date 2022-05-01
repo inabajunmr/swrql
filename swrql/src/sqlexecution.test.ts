@@ -68,6 +68,29 @@ test('select * from a where a between 3 and 5;', () => {
   expect(actual.fields).toContain('a');
 });
 
+test(`select * from a where a like '^[a-z]+$';`, () => {
+  const table1 = new CSVScan(
+    'a',
+    `a
+abc
+abc1
+xyz
+hello
+1abc`
+  );
+  const sqlExecution = new SQLExecution(
+    [table1],
+    `select * from a where a like '^[a-z]+$';`
+  );
+  const actual = sqlExecution.execute();
+  assertRecord(actual.records[0], { a: 'abc' });
+  assertRecord(actual.records[1], { a: 'xyz' });
+  assertRecord(actual.records[2], { a: 'hello' });
+  expect(actual.records.length).toBe(3);
+  expect(actual.fields.length).toBe(1);
+  expect(actual.fields).toContain('a');
+});
+
 test('select * from a,b;', () => {
   const table1 = new CSVScan(
     'a',

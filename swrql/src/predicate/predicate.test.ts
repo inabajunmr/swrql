@@ -65,3 +65,11 @@ test('a>1', () => {
   expect(sut.test(new Record({ a: '1' }))).toBe(false);
   expect(sut.test(new Record({ a: '2' }))).toBe(true);
 });
+
+test(`a like '^a.*$'`, () => {
+  const sut = new SQLParser(`SELECT * FROM abc WHERE a LIKE '^a.*$'`).parse()
+    .where;
+  expect(sut.test(new Record({ a: 'a' }))).toBe(true);
+  expect(sut.test(new Record({ a: 'abc' }))).toBe(true);
+  expect(sut.test(new Record({ a: 'cba' }))).toBe(false);
+});

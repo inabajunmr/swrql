@@ -6,6 +6,7 @@ import {
   GreaterThanOrEqualToken,
   GreaterThanToken,
   IdentifierToken,
+  LikeToken,
   NumberToken,
   OrToken,
   StringToken,
@@ -115,6 +116,30 @@ test('SELECT * FROM abc RIGHT JOIN def ON a=b;', () => {
         new IdentifierToken('a'),
         new IdentifierToken('b'),
         EqualToken.TOKEN,
+      ])
+    )
+  );
+  expect(actual.tables).toHaveLength(2);
+  expect(actual.where.tokens).toHaveLength(0);
+});
+
+test(`SELECT * FROM abc RIGHT JOIN def ON a LIKE '.*';`, () => {
+  const parser = new SQLParser(
+    `SELECT * FROM abc RIGHT JOIN def ON a LIKE '.*';`
+  );
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
+  expect(actual.tables[0]).toStrictEqual('abc');
+  expect(actual.tables[1]).toStrictEqual(
+    new JoinTable(
+      'outer',
+      'def',
+      'right',
+      new Predicate([
+        new IdentifierToken('a'),
+        new StringToken('.*'),
+        LikeToken.TOKEN,
       ])
     )
   );

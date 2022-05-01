@@ -21,7 +21,6 @@ export class SQLExecution {
 
   execute(): SQLExecutionResult {
     const select = new SQLParser(this.sql).parse();
-
     const tableName = select.tables.shift();
     const table = this.tables.find((t) => t.tableName === tableName);
     if (table === undefined) {

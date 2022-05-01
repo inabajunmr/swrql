@@ -40,6 +40,8 @@ export class IdentifierToken extends Token {
         return JoinToken.TOKEN;
       case 'ON':
         return OnToken.TOKEN;
+      case 'LIKE':
+        return LikeToken.TOKEN;
     }
 
     if (this.literal.match(/^[0-9]/)) {
@@ -178,9 +180,6 @@ export class JoinToken extends Token {
   toString(): string {
     return `JOIN`;
   }
-  isClauseDelimiter(): boolean {
-    return false;
-  }
 }
 
 /**
@@ -191,8 +190,15 @@ export class OnToken extends Token {
   toString(): string {
     return `ON`;
   }
-  isClauseDelimiter(): boolean {
-    return false;
+}
+
+/**
+ * LIKE
+ */
+export class LikeToken extends Token {
+  static readonly TOKEN = new LikeToken();
+  toString(): string {
+    return `LIKE`;
   }
 }
 
@@ -248,6 +254,9 @@ export class RParenToken extends Token {
   }
 }
 
+/**
+ * <
+ */
 export class LessThanToken extends Token {
   static readonly TOKEN = new LessThanToken();
 
@@ -256,6 +265,9 @@ export class LessThanToken extends Token {
   }
 }
 
+/**
+ * <=
+ */
 export class LessThanOrEqualToken extends Token {
   static readonly TOKEN = new LessThanOrEqualToken();
 
@@ -264,6 +276,9 @@ export class LessThanOrEqualToken extends Token {
   }
 }
 
+/**
+ * >
+ */
 export class GreaterThanToken extends Token {
   static readonly TOKEN = new GreaterThanToken();
 
@@ -272,6 +287,9 @@ export class GreaterThanToken extends Token {
   }
 }
 
+/**
+ * >=
+ */
 export class GreaterThanOrEqualToken extends Token {
   static readonly TOKEN = new GreaterThanOrEqualToken();
 
