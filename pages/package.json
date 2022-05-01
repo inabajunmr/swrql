@@ -30,7 +30,7 @@
     "process": "^0.11.10",
     "stream": "^0.0.2",
     "stream-browserify": "^3.0.0",
-    "swrql": "^0.0.9",
+    "swrql": "^0.0.10",
     "util": "^0.12.4"
   }
 }
