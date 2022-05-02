@@ -68,6 +68,30 @@ test('select * from a where a between 3 and 5;', () => {
   expect(actual.fields).toContain('a');
 });
 
+test('select * from a where a in(1,3,5);', () => {
+  const table1 = new CSVScan(
+    'a',
+    `a
+1
+2
+3
+4
+5
+6`
+  );
+  const sqlExecution = new SQLExecution(
+    [table1],
+    'select * from a where a in(1,3,5);'
+  );
+  const actual = sqlExecution.execute();
+  assertRecord(actual.records[0], { a: '1' });
+  assertRecord(actual.records[1], { a: '3' });
+  assertRecord(actual.records[2], { a: '5' });
+  expect(actual.records.length).toBe(3);
+  expect(actual.fields.length).toBe(1);
+  expect(actual.fields).toContain('a');
+});
+
 test(`select * from a where a like '^[a-z]+$';`, () => {
   const table1 = new CSVScan(
     'a',

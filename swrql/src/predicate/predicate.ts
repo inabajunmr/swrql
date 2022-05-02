@@ -32,7 +32,6 @@ export class Predicate {
     const tempTokens = [...this.tokens];
     const stack: any[] = [];
     while (tempTokens.length > 0) {
-
       const current = tempTokens.shift();
       this.consumeComparativeOperator(current as Token, stack);
       if (current instanceof IdentifierToken) {

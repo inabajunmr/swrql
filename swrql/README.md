@@ -23,7 +23,8 @@ https://inabajunmr.github.io/swrql/pages/public/
 | INNER JOIN                             | ✅          |
 | OUTER JOIN                             | ✅          |
 | BETWEEN                                | ✅          |
-| IN/NOT IN                              | Unsupported |
+| IN                                     | ✅ except for subquery |
+| NOT                                    | Unsupported |
 | ANY/ALL                                | Unsupported |
 | Subquery                               | Unsupported |
 | LIKE                                   | ✅ but can't use SQL wildcard. using only Regex. |

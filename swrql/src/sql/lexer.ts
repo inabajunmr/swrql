@@ -17,6 +17,7 @@ import {
   AndToken,
   NumberToken,
   GroupByToken,
+  OrToken,
 } from './token';
 
 export class SQLLexer {
@@ -47,6 +48,51 @@ export class SQLLexer {
         }
       } else {
         r.push(t);
+      }
+    }
+
+    // expand 'x in(a,b,c)' to '(x = a or x = b or x = c)'
+    for (let i = 0; i < r.length; i++) {
+      const c = r[i];
+      if (c instanceof IdentifierToken && c.literal.toUpperCase() === 'IN') {
+        const x = r[i - 1];
+        if (r[i + 1] !== LParenToken.TOKEN) {
+          continue;
+        }
+        const values = [];
+        let j = i + 2; // skip in and `(`
+        for (; j < r.length; j++) {
+          const c = r[j];
+          console.log(c);
+          if (
+            c instanceof IdentifierToken ||
+            c instanceof StringToken ||
+            c instanceof NumberToken
+          ) {
+            values.push(c);
+          } else if (c === CommaToken.TOKEN) {
+            continue;
+          } else if (c === RParenToken.TOKEN) {
+            break;
+          } else {
+            throw new Error('In clause is something wrong.');
+          }
+        }
+        // expand
+        const before = r.slice(0, i - 1);
+        const after = r.slice(j + 1);
+        const expandedIn = [];
+        expandedIn.push(LParenToken.TOKEN);
+        values.forEach((v) => {
+          expandedIn.push(x);
+          expandedIn.push(EqualToken.TOKEN);
+          expandedIn.push(v);
+          expandedIn.push(OrToken.TOKEN);
+        });
+        expandedIn.pop(); // remove redundant OR
+        expandedIn.push(RParenToken.TOKEN);
+        r = [...before, ...expandedIn, ...after];
+        i = [...before, ...expandedIn].length;
       }
     }
 
