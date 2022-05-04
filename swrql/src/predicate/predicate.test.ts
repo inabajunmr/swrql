@@ -73,3 +73,27 @@ test(`a like '^a.*$'`, () => {
   expect(sut.test(new Record({ a: 'abc' }))).toBe(true);
   expect(sut.test(new Record({ a: 'cba' }))).toBe(false);
 });
+
+test('NOT a=1', () => {
+  const sut = new SQLParser('SELECT * FROM abc WHERE NOT a=1;').parse().where;
+  expect(sut.test(new Record({ a: '1' }))).toBe(false);
+  expect(sut.test(new Record({ a: '2' }))).toBe(true);
+});
+
+test(`NOT (a=1) AND b=1`, () => {
+  const sut = new SQLParser(`SELECT * FROM abc WHERE NOT (a=1) AND b=1;`).parse()
+    .where;
+  expect(sut.test(new Record({ a: '1', b: '1' }))).toBe(false);
+  expect(sut.test(new Record({ a: '2', b: '1' }))).toBe(true);
+  expect(sut.test(new Record({ a: '1', b: '2' }))).toBe(false);
+  expect(sut.test(new Record({ a: '2', b: '2' }))).toBe(false);
+});
+
+test(`NOT (a=1 AND b=1)`, () => {
+  const sut = new SQLParser(`SELECT * FROM abc WHERE NOT (a=1 AND b=1);`).parse()
+    .where;
+  expect(sut.test(new Record({ a: '1', b: '1' }))).toBe(false);
+  expect(sut.test(new Record({ a: '2', b: '1' }))).toBe(true);
+  expect(sut.test(new Record({ a: '1', b: '2' }))).toBe(true);
+  expect(sut.test(new Record({ a: '2', b: '2' }))).toBe(true);
+});

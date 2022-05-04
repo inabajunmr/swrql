@@ -7,6 +7,7 @@ import {
   GreaterThanToken,
   IdentifierToken,
   LikeToken,
+  NotToken,
   NumberToken,
   OrToken,
   StringToken,
@@ -350,6 +351,71 @@ test('SELECT * FROM abc WHERE a >= 1;', () => {
   expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
   expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));
   expect(actual.where.tokens[2]).toStrictEqual(GreaterThanOrEqualToken.TOKEN);
+});
+
+test('SELECT * FROM abc WHERE NOT a >= 1;', () => {
+  const parser = new SQLParser('SELECT * FROM abc WHERE NOT a >= 1;');
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
+  expect(actual.tables[0]).toContain('abc');
+  expect(actual.where.tokens).toHaveLength(4);
+  expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
+  expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));
+  expect(actual.where.tokens[2]).toStrictEqual(GreaterThanOrEqualToken.TOKEN);
+  expect(actual.where.tokens[3]).toStrictEqual(NotToken.TOKEN);
+});
+
+test('SELECT * FROM abc WHERE NOT a = 1 AND b=1;', () => {
+  const parser = new SQLParser('SELECT * FROM abc WHERE NOT a = 1 AND b=1;');
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
+  expect(actual.tables[0]).toContain('abc');
+  expect(actual.where.tokens).toHaveLength(8);
+  expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
+  expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));
+  expect(actual.where.tokens[2]).toStrictEqual(EqualToken.TOKEN);
+  expect(actual.where.tokens[3]).toStrictEqual(NotToken.TOKEN);
+  expect(actual.where.tokens[4]).toStrictEqual(new IdentifierToken('b'));
+  expect(actual.where.tokens[5]).toStrictEqual(new NumberToken('1'));
+  expect(actual.where.tokens[6]).toStrictEqual(EqualToken.TOKEN);
+  expect(actual.where.tokens[7]).toStrictEqual(AndToken.TOKEN);
+
+});
+
+test('SELECT * FROM abc WHERE NOT (a = 1 AND b=1);', () => {
+  const parser = new SQLParser('SELECT * FROM abc WHERE NOT (a = 1 AND b=1);');
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
+  expect(actual.tables[0]).toContain('abc');
+  expect(actual.where.tokens).toHaveLength(8);
+  expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
+  expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));
+  expect(actual.where.tokens[2]).toStrictEqual(EqualToken.TOKEN);
+  expect(actual.where.tokens[3]).toStrictEqual(new IdentifierToken('b'));
+  expect(actual.where.tokens[4]).toStrictEqual(new NumberToken('1'));
+  expect(actual.where.tokens[5]).toStrictEqual(EqualToken.TOKEN);
+  expect(actual.where.tokens[6]).toStrictEqual(AndToken.TOKEN);
+  expect(actual.where.tokens[7]).toStrictEqual(NotToken.TOKEN);
+});
+
+test('SELECT * FROM abc WHERE NOT (a = 1) AND b=1;', () => {
+  const parser = new SQLParser('SELECT * FROM abc WHERE NOT (a = 1) AND b=1;');
+  const actual = parser.parse();
+  expect(actual.fields[0]).toStrictEqual(new SelectField('*'));
+  expect(actual.fields.length).toBe(1);
+  expect(actual.tables[0]).toContain('abc');
+  expect(actual.where.tokens).toHaveLength(8);
+  expect(actual.where.tokens[0]).toStrictEqual(new IdentifierToken('a'));
+  expect(actual.where.tokens[1]).toStrictEqual(new NumberToken('1'));
+  expect(actual.where.tokens[2]).toStrictEqual(EqualToken.TOKEN);
+  expect(actual.where.tokens[3]).toStrictEqual(NotToken.TOKEN);
+  expect(actual.where.tokens[4]).toStrictEqual(new IdentifierToken('b'));
+  expect(actual.where.tokens[5]).toStrictEqual(new NumberToken('1'));
+  expect(actual.where.tokens[6]).toStrictEqual(EqualToken.TOKEN);
+  expect(actual.where.tokens[7]).toStrictEqual(AndToken.TOKEN);
 });
 
 test(`SELECT a,b,c FROM abc WHERE a=1 AND b='abc';`, () => {

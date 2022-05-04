@@ -42,6 +42,8 @@ export class IdentifierToken extends Token {
         return OnToken.TOKEN;
       case 'LIKE':
         return LikeToken.TOKEN;
+      case 'NOT':
+        return NotToken.TOKEN;
     }
 
     if (this.literal.match(/^[0-9]/)) {

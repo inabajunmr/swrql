@@ -18,6 +18,7 @@ import {
   NumberToken,
   GroupByToken,
   OrToken,
+  NotToken,
 } from './token';
 
 export class SQLLexer {
@@ -58,7 +59,7 @@ export class SQLLexer {
         const b = r[i - 1];
         let not = false;
         let x = r[i - 1];
-        if (b instanceof IdentifierToken && b.literal.toUpperCase() === 'NOT') {
+        if (b instanceof NotToken) {
           not = true;
           x = r[i - 2];
         }

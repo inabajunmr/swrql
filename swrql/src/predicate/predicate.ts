@@ -13,6 +13,7 @@ import {
   OrToken,
   StringToken,
   Token,
+  NotToken,
 } from '../sql/token';
 
 /**
@@ -47,6 +48,10 @@ export class Predicate {
   }
 
   private consumeComparativeOperator(operator: Token, stack: any[]) {
+    if (operator === NotToken.TOKEN) {
+      stack.push(!stack.pop());
+      return;
+    }
     if (
       operator === EqualToken.TOKEN ||
       operator === LikeToken.TOKEN ||

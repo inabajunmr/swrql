@@ -244,7 +244,6 @@ test('x IN (1,2,3)', () => {
 test('x NOT IN (1,2,3)', () => {
   const lexer = new SQLLexer('x NOT IN (1,2,3)');
   const actual = lexer.tokens();
-  console.log(actual);
   expect(actual.length).toBe(14);
   expect(actual[0]).toStrictEqual(LParenToken.TOKEN);
   expect(actual[1]).toStrictEqual(new IdentifierToken('x'));

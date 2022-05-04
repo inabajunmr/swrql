@@ -24,7 +24,7 @@ https://inabajunmr.github.io/swrql/pages/public/
 | OUTER JOIN                             | ✅          |
 | BETWEEN                                | ✅          |
 | IN                                     | ✅ except for subquery |
-| NOT                                    | Unsupported |
+| NOT                                    | ✅          |
 | ANY/ALL                                | Unsupported |
 | Subquery                               | Unsupported |
 | LIKE                                   | ✅ but can't use SQL wildcard. using only Regex. |
