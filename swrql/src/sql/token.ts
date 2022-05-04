@@ -203,6 +203,15 @@ export class LikeToken extends Token {
 }
 
 /**
+ * NOT
+ */
+export class NotToken extends Token {
+  static readonly TOKEN = new NotToken();
+  toString(): string {
+    return `NOT`;
+  }
+}
+/**
  * ,
  */
 export class CommaToken extends Token {

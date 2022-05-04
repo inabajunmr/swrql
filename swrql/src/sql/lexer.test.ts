@@ -241,6 +241,27 @@ test('x IN (1,2,3)', () => {
   expect(actual[13]).toStrictEqual(EOFToken.TOKEN);
 });
 
+test('x NOT IN (1,2,3)', () => {
+  const lexer = new SQLLexer('x NOT IN (1,2,3)');
+  const actual = lexer.tokens();
+  console.log(actual);
+  expect(actual.length).toBe(14);
+  expect(actual[0]).toStrictEqual(LParenToken.TOKEN);
+  expect(actual[1]).toStrictEqual(new IdentifierToken('x'));
+  expect(actual[2]).toStrictEqual(DiamondToken.TOKEN);
+  expect(actual[3]).toStrictEqual(new NumberToken('1'));
+  expect(actual[4]).toStrictEqual(AndToken.TOKEN);
+  expect(actual[5]).toStrictEqual(new IdentifierToken('x'));
+  expect(actual[6]).toStrictEqual(DiamondToken.TOKEN);
+  expect(actual[7]).toStrictEqual(new NumberToken('2'));
+  expect(actual[8]).toStrictEqual(AndToken.TOKEN);
+  expect(actual[9]).toStrictEqual(new IdentifierToken('x'));
+  expect(actual[10]).toStrictEqual(DiamondToken.TOKEN);
+  expect(actual[11]).toStrictEqual(new NumberToken('3'));
+  expect(actual[12]).toStrictEqual(RParenToken.TOKEN);
+  expect(actual[13]).toStrictEqual(EOFToken.TOKEN);
+});
+
 test('x IN (1,2) AND y IN (3,4)', () => {
   const lexer = new SQLLexer('x IN (1,2) AND y IN (3,4)');
   const actual = lexer.tokens();
@@ -264,6 +285,35 @@ test('x IN (1,2) AND y IN (3,4)', () => {
   expect(actual[14]).toStrictEqual(OrToken.TOKEN);
   expect(actual[15]).toStrictEqual(new IdentifierToken('y'));
   expect(actual[16]).toStrictEqual(EqualToken.TOKEN);
+  expect(actual[17]).toStrictEqual(new NumberToken('4'));
+  expect(actual[18]).toStrictEqual(RParenToken.TOKEN);
+
+  expect(actual[19]).toStrictEqual(EOFToken.TOKEN);
+});
+
+test('x NOT IN (1,2) AND y IN NOT (3,4)', () => {
+  const lexer = new SQLLexer('x NOT IN (1,2) AND y NOT IN (3,4)');
+  const actual = lexer.tokens();
+  expect(actual.length).toBe(20);
+  expect(actual[0]).toStrictEqual(LParenToken.TOKEN);
+  expect(actual[1]).toStrictEqual(new IdentifierToken('x'));
+  expect(actual[2]).toStrictEqual(DiamondToken.TOKEN);
+  expect(actual[3]).toStrictEqual(new NumberToken('1'));
+  expect(actual[4]).toStrictEqual(AndToken.TOKEN);
+  expect(actual[5]).toStrictEqual(new IdentifierToken('x'));
+  expect(actual[6]).toStrictEqual(DiamondToken.TOKEN);
+  expect(actual[7]).toStrictEqual(new NumberToken('2'));
+  expect(actual[8]).toStrictEqual(RParenToken.TOKEN);
+
+  expect(actual[9]).toStrictEqual(AndToken.TOKEN);
+
+  expect(actual[10]).toStrictEqual(LParenToken.TOKEN);
+  expect(actual[11]).toStrictEqual(new IdentifierToken('y'));
+  expect(actual[12]).toStrictEqual(DiamondToken.TOKEN);
+  expect(actual[13]).toStrictEqual(new NumberToken('3'));
+  expect(actual[14]).toStrictEqual(AndToken.TOKEN);
+  expect(actual[15]).toStrictEqual(new IdentifierToken('y'));
+  expect(actual[16]).toStrictEqual(DiamondToken.TOKEN);
   expect(actual[17]).toStrictEqual(new NumberToken('4'));
   expect(actual[18]).toStrictEqual(RParenToken.TOKEN);
 

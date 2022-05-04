@@ -23,7 +23,7 @@ https://inabajunmr.github.io/swrql/pages/public/
 | INNER JOIN                             | ✅          |
 | OUTER JOIN                             | ✅          |
 | BETWEEN                                | ✅          |
-| IN                                     | ✅ except for subquery |
+| IN/NOT IN                              | ✅ except for subquery |
 | NOT                                    | Unsupported |
 | ANY/ALL                                | Unsupported |
 | Subquery                               | Unsupported |

@@ -55,7 +55,13 @@ export class SQLLexer {
     for (let i = 0; i < r.length; i++) {
       const c = r[i];
       if (c instanceof IdentifierToken && c.literal.toUpperCase() === 'IN') {
-        const x = r[i - 1];
+        const b = r[i - 1];
+        let not = false;
+        let x = r[i - 1];
+        if (b instanceof IdentifierToken && b.literal.toUpperCase() === 'NOT') {
+          not = true;
+          x = r[i - 2];
+        }
         if (r[i + 1] !== LParenToken.TOKEN) {
           continue;
         }
@@ -63,7 +69,6 @@ export class SQLLexer {
         let j = i + 2; // skip in and `(`
         for (; j < r.length; j++) {
           const c = r[j];
-          console.log(c);
           if (
             c instanceof IdentifierToken ||
             c instanceof StringToken ||
@@ -79,15 +84,26 @@ export class SQLLexer {
           }
         }
         // expand
-        const before = r.slice(0, i - 1);
+        let before = r.slice(0, i - 1);
+        if (not) {
+          before = r.slice(0, i - 2);
+        }
         const after = r.slice(j + 1);
         const expandedIn = [];
         expandedIn.push(LParenToken.TOKEN);
         values.forEach((v) => {
           expandedIn.push(x);
-          expandedIn.push(EqualToken.TOKEN);
+          if (not) {
+            expandedIn.push(DiamondToken.TOKEN);
+          } else {
+            expandedIn.push(EqualToken.TOKEN);
+          }
           expandedIn.push(v);
-          expandedIn.push(OrToken.TOKEN);
+          if (not) {
+            expandedIn.push(AndToken.TOKEN);
+          } else {
+            expandedIn.push(OrToken.TOKEN);
+          }
         });
         expandedIn.pop(); // remove redundant OR
         expandedIn.push(RParenToken.TOKEN);
